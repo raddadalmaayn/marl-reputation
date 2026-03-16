@@ -3,13 +3,13 @@
   "description": "Attack 8: Provenance replay \u2014 should be 100% blocked",
   "n_seeds": 5,
   "converged_count": 4,
-  "mean_eval_reward": -0.5106680727233794,
-  "std_eval_reward": 0.28356334473542566,
-  "mean_eval_accuracy": 0.24248703765718943,
-  "std_eval_accuracy": 0.17824611061396534,
+  "mean_eval_reward": -0.3660206608028917,
+  "std_eval_reward": 0.3217195816323341,
+  "mean_eval_accuracy": 0.2885778186634701,
+  "std_eval_accuracy": 0.22118383001405575,
   "mean_honest_pct": 1.0,
   "std_honest_pct": 0.0,
-  "total_training_time_s": 41597.6772005558,
+  "total_training_time_s": 60173.80510044098,
   "seed_results": [
     {
       "config": "config10_provenance_replay",
@@ -236,36 +236,36 @@
       "seed": 4,
       "converged": false,
       "converged_at": null,
-      "episodes_trained": 10000,
-      "training_time_s": 7415.814567327499,
-      "eval_mean_reward": -0.7201297408185832,
-      "eval_std_reward": 0.03325836743913124,
-      "eval_mean_accuracy": 0.3363579826345152,
-      "eval_std_accuracy": 0.029653918288369992,
+      "episodes_trained": 30000,
+      "training_time_s": 25991.942467212677,
+      "eval_mean_reward": 0.003107318783855679,
+      "eval_std_reward": 0.07417331569948565,
+      "eval_mean_accuracy": 0.5668118876659184,
+      "eval_std_accuracy": 0.040181175016702035,
       "eval_mean_honest_pct": 1.0,
       "eval_std_honest_pct": 0.0,
       "final_env_metrics": {
-        "mean_score": 0.46942080382308304,
-        "mean_true_quality": 0.8156069343320749,
-        "mean_reputation_accuracy": 0.3461861305089919,
-        "mean_ci_width": 0.3524445399511001,
+        "mean_score": 0.23297223671886905,
+        "mean_true_quality": 0.7953635325742131,
+        "mean_reputation_accuracy": 0.5623912958553441,
+        "mean_ci_width": 0.2277848967950657,
         "total_sybils": 0,
         "total_disputes_filed": 0,
-        "total_ratings": 325,
-        "attacks_attempted": 18,
-        "attacks_blocked": 3,
-        "defense_hold_rate": 0.16666666666666666,
+        "total_ratings": 1015,
+        "attacks_attempted": 0,
+        "attacks_blocked": 0,
+        "defense_hold_rate": 0.0,
         "defense_by_type": {
           "7": 0,
           "8": 0,
           "9": 0,
           "10": 0,
-          "11": 3
+          "11": 0
         },
         "stakes": {
-          "agent_0": 18000.0,
-          "agent_1": 18000.0,
-          "agent_2": 18000.0,
+          "agent_0": 20000.0,
+          "agent_1": 20000.0,
+          "agent_2": 20000.0,
           "agent_3": 20000.0,
           "agent_4": 20000.0,
           "agent_5": 20000.0,
@@ -284,7 +284,8 @@
           "agent_18": 20000.0,
           "agent_19": 20000.0
         }
-      }
+      },
+      "resumed_from_ep": 10000
     }
   ]
 }

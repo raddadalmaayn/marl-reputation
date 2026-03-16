@@ -8,8 +8,9 @@
 
 Table~\ref{tab:summary} presents the main evaluation results for all 11
 configurations.  Metrics are reported as mean $\pm$ standard deviation over
-the final 20\% of training episodes, averaged across 5 seeds (4 seeds for
-C2 and C11, whose seed-4 runs were still in progress at reporting time).
+the final 20\% of training episodes, averaged across 5 seeds (all seeds
+completed; extended training ran up to 30{,}000 episodes for seeds that had
+not converged within the initial 10{,}000-episode budget).
 
 \input{tables/tab_summary}
 
@@ -92,10 +93,12 @@ meta-reputation weighting rather than deterministic penalties.
         approximately half of Sybil actions are blocked by the stake
         cost barrier.
   \item \textbf{C5 (adaptive, $2\times$ bonus)}: $50.1\%$ block rate
-        (52{,}526/105{,}002); honest \% = $99.75\% \pm 0.13\%$.  Even at
-        double the reward bonus, the honest population converges; the defense
-        system handles 2$\times$ adversarial incentive without catastrophic
-        failure.
+        (52{,}526/105{,}002); honest \% = $100.00\% \pm 0.01\%$ (3/5 seeds
+        converged by 26{,}158 episodes; remaining seeds reached 100\% honest
+        behavior without meeting the variance threshold).  Even at double
+        the reward bonus, the honest population reaches a near-perfect honest
+        equilibrium; the defense system handles $2\times$ adversarial incentive
+        without catastrophic failure.
   \item \textbf{C2 (mixed)}: $51.9\%$ block rate (39{,}951/76{,}938);
         honest \% = $99.70\% \pm 0.22\%$.  The mixed population scenario
         without explicit attack-class actions shows the same economic
@@ -120,19 +123,25 @@ avoid them even though the block rate metric only counts
 
 The comprehensive configuration (C11) enables all 9 attack vectors
 simultaneously with 10 adversarial agents ($50\%$ of the population) in a
-colluding subgroup (4 members) with Sybil capability.  Results from 5
-completed seeds show:
+colluding subgroup (4 members) with Sybil capability.  Extended training
+(up to 30{,}000 episodes) achieved full convergence across all 5 seeds, with
+results as follows:
 \begin{itemize}[noitemsep]
-  \item Honest \% = $75.84\% \pm 38.38\%$ (highest variance of any configuration)
+  \item Honest \% = $20.00\% \pm 40.00\%$ (highest variance of any configuration)
   \item Defense block rate = $48.0\%$ (72{,}507/164{,}345 attempts)
-  \item Mean reward = $-2.24 \pm 1.89$ (most negative; high attack costs)
+  \item Mean reward = $-2.62 \pm 2.17$ (most negative; high attack costs)
+  \item Convergence episodes: 5{,}000--16{,}593 (seeds 0, 3, 4 required extended training)
 \end{itemize}
-The high standard deviation ($38.4\%$) indicates bimodal seed outcomes: some
-seeds converge to high honest behavior while others stabilize at a lower
-equilibrium where multi-vector coordination sustains adversarial profitability.
-This confirms that C11 is the primary open challenge: the defense layer
-provides only a $48\%$ block rate, and honest convergence is not reliable
-with 50\% adversarial population fraction.
+The fully converged results reveal a \emph{strongly bimodal equilibrium}: 4 of 5
+seeds converged to an adversarial-dominant state ($0\%$ honest, negative reward),
+while 1 seed converged to the honest-dominant Nash equilibrium ($100\%$ honest).
+This bimodality arises from the landscape of multi-vector coordination: once a
+critical mass of adversarial agents aligns on a joint strategy early in training,
+honest agents cannot recover within the shared-policy gradient.  The $48\%$ block
+rate confirms that the defense layer partially degrades coordinated multi-vector
+attacks, but is insufficient to guarantee honest convergence at $50\%$ adversarial
+population fraction.  C11 therefore defines the practical robustness boundary of
+the proposed system.
 
 \begin{figure}[!t]
   \centering
@@ -172,8 +181,11 @@ deterrence mechanisms.
 Figure~\ref{fig:honest_convergence} shows honest-action percentage over
 training episodes.  Convergence to $>99\%$ honest behavior is achieved
 within 3{,}000--5{,}000 episodes for single-attack configurations and
-within 2{,}000 episodes for the baseline.  The multi-vector configuration
-(C11) does not fully converge within 10{,}000 episodes.
+within 2{,}000 episodes for the baseline.  The adaptive configuration (C5)
+required up to 26{,}158 episodes for its slowest seed.  The multi-vector
+configuration (C11) required extended training beyond 10{,}000 episodes and
+converged to a bimodal equilibrium: 4/5 seeds to adversarial dominance and
+1/5 to honest dominance, by episode 16{,}593.
 
 \begin{figure}[!t]
   \centering
@@ -319,12 +331,18 @@ equilibrium.
 
 Table~\ref{tab:statistical} reports one-sample $t$-tests (one-tailed,
 threshold $= 95\%$) for honest-behavior percentage across seeds.
-Eight of the 11 configurations show statistically significant honest behavior
-above the 95\% threshold ($p < 0.05$).  The three exceptions are C3 (Sybil
-flooding), C6 (self-rating), and C11 (comprehensive), which exhibit high
-cross-seed variance arising from non-convergent seeds.  For C11, the wide
-confidence interval ($75.8\% \pm 38.4\%$) spans both failure and success
-modes, preventing a significant aggregate result despite some seeds achieving
-near-perfect honest behavior.
+Seven of the 11 configurations show statistically significant honest behavior
+above the 95\% threshold ($p < 0.05$).  The four exceptions are C2 (mixed),
+C3 (Sybil flooding), C6 (self-rating), and C11 (comprehensive), all of which
+exhibit high cross-seed variance arising from bimodal equilibria.  For C11,
+the fully converged result ($20.0\% \pm 44.7\%$) reflects 4/5 seeds settling
+in the adversarial-dominant basin; the $t$-statistic of $-3.75$ is strongly
+negative, confirming that the aggregate honest behavior is significantly
+\emph{below} the 95\% threshold.  For C2, one seed converged to an
+adversarial-dominant equilibrium after extended training (honest \% = $0.0\%$),
+reducing the aggregate from $99.7\%$ to $73.6\%$ and rendering the
+difference from threshold non-significant ($t = -1.10$, $p = 0.834$).
+C5 and C10 improved with extended training, both reaching $100.0\%$ honest
+behavior ($t = \infty$, $p < 0.001$).
 
 \input{tables/tab_statistical}
