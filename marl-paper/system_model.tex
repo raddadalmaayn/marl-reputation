@@ -39,12 +39,12 @@ through sparse identities.
 To prevent stale ratings from dominating long-term scores, the system
 applies exponential decay at each write event:
 \begin{equation}
-  \alpha_i \leftarrow \alpha_i \cdot \lambda^{\Delta t},\quad
-  \beta_i  \leftarrow \beta_i  \cdot \lambda^{\Delta t},
+  \alpha_i \leftarrow \max\bigl(\alpha_0,\; \alpha_i \cdot \lambda^{\Delta t}\bigr), \quad
+  \beta_i  \leftarrow \max\bigl(\beta_0,\; \beta_i  \cdot \lambda^{\Delta t}\bigr),
   \label{eq:decay}
 \end{equation}
 where $\Delta t$ is the elapsed time in days and $\lambda = 0.98$ is the
-daily decay factor.  Decay is applied before the new rating is added,
+daily decay factor, and $(\alpha_0, \beta_0) = (2, 2)$ is the uninformative prior that serves as a floor, preventing accumulator values from decaying below the initial state.  Decay is applied before the new rating is added,
 so that recent evidence always dominates.
 
 \subsection{Stake-Based Economic Incentives}

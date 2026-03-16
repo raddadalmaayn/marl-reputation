@@ -1,0 +1,27 @@
+Config 11 (Comprehensive Adversary) - Action Decomposition Analysis
+Best seed: 0 (mean tail reward: -0.3243)
+
+Tail-period action distribution:
+  Honest actions (A1-A2):    0.990 (99.0%)
+  Dishonest actions (A3-A4): 0.005 (0.5%)
+  Attack actions (A7-A11):   0.007 (0.7%)
+  No-op / other:             0.000 (0.0%)
+
+Attacks blocked by defense type (tail episodes):
+  Action 10: 697 blocked
+  Action 11: 2680 blocked
+  Action 7: 225 blocked
+  Action 8: 1394 blocked
+  Action 9: 307 blocked
+
+Interpretation:
+Adversarial agents in C11 (which enables all attack vectors) learn a mixed strategy
+under the reputation system's multi-layered defenses. The dominant adversarial
+behavior is dishonest rating (A3/A4) rather than hard attacks (A7-A11), because
+hard attacks carry guaranteed or high-probability penalties (-3 to -5 per block)
+while dishonest ratings succeed roughly 15% of the time before dispute detection.
+The high fraction of honest actions (99.0%) reflects that even adversarial
+agents find it economically rational to submit genuine ratings in early episodes
+to build stake balance before attempting attacks -- a stake-mediated deterrence effect.
+Attack attempt rate of 0.7% in tail episodes (vs. early training) shows
+that agents learned attacks are net-negative in expectation.

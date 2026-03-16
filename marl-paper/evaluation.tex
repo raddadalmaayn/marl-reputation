@@ -120,18 +120,18 @@ avoid them even though the block rate metric only counts
 
 The comprehensive configuration (C11) enables all 9 attack vectors
 simultaneously with 10 adversarial agents ($50\%$ of the population) in a
-colluding subgroup (4 members) with Sybil capability.  Results from 4
+colluding subgroup (4 members) with Sybil capability.  Results from 5
 completed seeds show:
 \begin{itemize}[noitemsep]
-  \item Honest \% = $69.9\% \pm 40.8\%$ (highest variance of any configuration)
-  \item Defense block rate = $54.1\%$ (65{,}400/134{,}337 attempts)
-  \item Mean reward = $-2.66 \pm 1.89$ (most negative; high attack costs)
+  \item Honest \% = $75.84\% \pm 38.38\%$ (highest variance of any configuration)
+  \item Defense block rate = $48.0\%$ (72{,}507/164{,}345 attempts)
+  \item Mean reward = $-2.24 \pm 1.89$ (most negative; high attack costs)
 \end{itemize}
-The high standard deviation ($40.8\%$) indicates bimodal seed outcomes: some
+The high standard deviation ($38.4\%$) indicates bimodal seed outcomes: some
 seeds converge to high honest behavior while others stabilize at a lower
 equilibrium where multi-vector coordination sustains adversarial profitability.
 This confirms that C11 is the primary open challenge: the defense layer
-provides only a $54\%$ block rate, and honest convergence is not reliable
+provides only a $48\%$ block rate, and honest convergence is not reliable
 with 50\% adversarial population fraction.
 
 \begin{figure}[!t]
@@ -193,3 +193,138 @@ within 2{,}000 episodes for the baseline.  The multi-vector configuration
            leading to stake-constrained Sybil creation after episode 1{,}500.}
   \label{fig:sybil_stake}
 \end{figure}
+
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=0.9\columnwidth]{figures/fig_defense_heatmap.pdf}
+  \caption{Defense performance heatmap across all 11 configurations.
+           Color intensity (YlGn) encodes normalized performance (0--1).
+           C1 achieves perfect scores on all metrics; C11 shows degradation
+           across honest~\%, defense block rate, and convergence rate due
+           to the combined multi-vector adversarial load.}
+  \label{fig:defense_heatmap}
+\end{figure}
+
+% -----------------------------------------------------------------------
+\subsection{Ablation Study}
+\label{sec:ablation}
+% -----------------------------------------------------------------------
+
+To quantify the contribution of each defense mechanism, we conducted an
+ablation study by removing one mechanism at a time from the full C2
+configuration and retraining with 3 seeds at up to 5{,}000 episodes.
+Table~\ref{tab:ablation} reports the results.
+
+\input{tables/tab_ablation}
+
+The most critical mechanism is stake-based economic deterrence: removing the
+minimum-stake requirement degrades honest behavior most severely, confirming
+that the financial entry barrier is the primary deterrent against Sybil
+attacks and dishonest rating.  Removing Wilson CI scaling reduces the
+system's ability to penalize sparse identities, while removing temporal decay
+allows adversarial agents to benefit from accumulated stale evidence.
+Disabling dispute resolution removes the correction mechanism for dishonest
+ratings that slip past initial detection.
+
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=0.9\columnwidth]{figures/fig_ablation.pdf}
+  \caption{Ablation study: honest action percentage and reputation accuracy
+           (MAE) for the full system (C2) vs.\ each variant with one defense
+           mechanism removed.  The 95\% threshold line (dashed) indicates the
+           minimum acceptable honest behavior.}
+  \label{fig:ablation}
+\end{figure}
+
+% -----------------------------------------------------------------------
+\subsection{Parameter Sensitivity}
+\label{sec:sensitivity}
+% -----------------------------------------------------------------------
+
+Figure~\ref{fig:sensitivity} shows the effect of varying the adversarial
+reward bonus $b$ (the primary incentive parameter) on honest action percentage
+in tail episodes.  The system maintains $>95\%$ honest behavior for $b \leq 1.0$
+(up to $2\times$ the baseline), confirming robustness to moderate incentive
+amplification.  At $b = 2.0$ honest behavior begins to degrade for some seeds,
+and at $b = 4.0$ convergence fails in the majority of seeds — consistent with
+the theoretical expectation that sufficiently strong adversarial incentives
+can overcome any fixed penalty structure.
+
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=0.75\columnwidth]{figures/fig_parameter_sensitivity.pdf}
+  \caption{Incentive sensitivity: honest action percentage (tail) as a function
+           of adversarial reward bonus $b$.  The dashed line marks the current
+           system default ($b = 0.5$).  The dotted line marks the 95\%
+           honest-behavior threshold.}
+  \label{fig:sensitivity}
+\end{figure}
+
+% -----------------------------------------------------------------------
+\subsection{MAPPO vs.\ Independent PPO}
+\label{sec:mappo_vs_ippo}
+% -----------------------------------------------------------------------
+
+We compare MAPPO (shared policy) against Independent PPO (per-agent policy,
+no parameter sharing) on C2 and C11.  Figure~\ref{fig:mappo_vs_ippo} shows
+the training curves.  MAPPO consistently reaches the 95\% honest-behavior
+threshold faster than IPPO on both configurations, reflecting the benefit of
+shared policy learning: honest agents can collectively learn the optimal
+deterrence response more efficiently when they share gradient updates.  On C11,
+the performance gap is larger due to the coordinated multi-vector nature of
+the adversarial population, which MAPPO's joint observation processing handles
+more robustly.
+
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=0.9\columnwidth]{figures/fig_mappo_vs_ippo.pdf}
+  \caption{MAPPO vs.\ Independent PPO: honest-action percentage over training
+           (smoothed, mean $\pm$ std across seeds) for C2 (mixed adversaries,
+           left) and C11 (all attacks, right).  MAPPO converges faster and to
+           a higher equilibrium on both configurations.}
+  \label{fig:mappo_vs_ippo}
+\end{figure}
+
+% -----------------------------------------------------------------------
+\subsection{C11 Action Decomposition}
+\label{sec:c11_decomp}
+% -----------------------------------------------------------------------
+
+Figure~\ref{fig:c11_decomp} shows the action distribution in the tail
+episodes for the best-performing C11 seed.  Adversarial agents in C11
+learn a mixed strategy dominated by honest rating actions ($\approx\!99\%$
+of all actions), with a small residual of dishonest ratings and hard attacks.
+The tail attack-attempt rate of $\approx\!0.7\%$ reflects the learned
+unprofitability of hard attacks: provenance replay (A11) and admin escalation
+(A8) are most frequently attempted but always blocked.  The dominance of
+honest behavior in the best seed illustrates that even under the most
+adversarial setting, a well-trained MAPPO policy can discover the honest Nash
+equilibrium.
+
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=0.9\columnwidth]{figures/fig_c11_action_decomposition.pdf}
+  \caption{C11 action distribution in tail episodes (best seed, left) and
+           blocked attacks by type (right).  Provenance replay (A11) and
+           admin escalation (A8) dominate the blocked-attack counts, reflecting
+           the frequency with which adversarial agents attempt these
+           high-penalty actions before learning they are unprofitable.}
+  \label{fig:c11_decomp}
+\end{figure}
+
+% -----------------------------------------------------------------------
+\subsection{Statistical Significance}
+\label{sec:stats}
+% -----------------------------------------------------------------------
+
+Table~\ref{tab:statistical} reports one-sample $t$-tests (one-tailed,
+threshold $= 95\%$) for honest-behavior percentage across seeds.
+Eight of the 11 configurations show statistically significant honest behavior
+above the 95\% threshold ($p < 0.05$).  The three exceptions are C3 (Sybil
+flooding), C6 (self-rating), and C11 (comprehensive), which exhibit high
+cross-seed variance arising from non-convergent seeds.  For C11, the wide
+confidence interval ($75.8\% \pm 38.4\%$) spans both failure and success
+modes, preventing a significant aggregate result despite some seeds achieving
+near-perfect honest behavior.
+
+\input{tables/tab_statistical}

@@ -1,7 +1,7 @@
 \begin{table*}[t!]
 \centering
 \caption{Evaluation summary across 11 experimental configurations.
-Metrics are mean $\pm$ std over the final 20\% of training episodes, averaged across 5 seeds (4 for C2 and C11).
+Metrics are mean $\pm$ std over the final 20\% of training episodes, averaged across 5 seeds.
 Honest~\% = fraction of rating actions that were honest (A1 or A2).
 Defense Block Rate = blocked\,/\,attempted for all attack-class actions (A5--A11).
 Rep.\ Accuracy = mean $|\mu_i - q_i|$ (lower is better).}
@@ -13,7 +13,7 @@ Rep.\ Accuracy = mean $|\mu_i - q_i|$ (lower is better).}
 \textbf{C\#} & \textbf{Configuration} & \textbf{Conv.} & \textbf{Mean Reward} & \textbf{Honest \%} & \textbf{Defense Block Rate} & \textbf{Rep.\ Acc.} \\
 \midrule
 1  & All honest (baseline)       & 5/5 & $-0.030\pm0.013$ & $99.84\pm0.09$\%  & --- (0 attacks)                     & $0.296\pm0.003$ \\
-2  & Mixed (5 adv.)              & ---  & $-1.267\pm0.138$ & $99.70\pm0.22$\%  & 51.9\% (39{,}951/76{,}938)          & $0.307\pm0.002$ \\
+2  & Mixed (5 adv.)              & 3/5 & $-1.274\pm0.124$ & $99.73\pm0.21$\%  & 51.6\% (51{,}348/99{,}531)          & $0.306\pm0.002$ \\
 3  & Sybil flooding              & 5/5 & $-1.219\pm0.150$ & $87.55\pm5.74$\%  & 52.0\% (24{,}361/47{,}038)          & $0.304\pm0.004$ \\
 4  & Collusion ring              & 5/5 & $-0.302\pm0.024$ & $99.46\pm0.17$\%  & 58.3\% (25{,}584/43{,}799)          & $0.304\pm0.003$ \\
 5  & Adaptive ($2\times$ bonus)  & 2/5 & $-1.299\pm0.054$ & $99.75\pm0.13$\%  & 50.1\% (52{,}526/105{,}002)         & $0.305\pm0.003$ \\
@@ -22,8 +22,8 @@ Rep.\ Accuracy = mean $|\mu_i - q_i|$ (lower is better).}
 8  & Evidence tampering          & 5/5 & $+0.010\pm0.011$ & $99.69\pm0.13$\%  & 81.5\% (411/507)                    & $0.303\pm0.006$ \\
 9  & Gate bypass                 & 5/5 & $+0.024\pm0.018$ & $99.74\pm0.23$\%  & \textbf{100.0\%} (582/582)          & $0.303\pm0.011$ \\
 10 & Provenance replay           & 4/5 & $-0.891\pm0.068$ & $99.86\pm0.14$\%  & 27.1\% (21{,}797/80{,}451)          & $0.304\pm0.004$ \\
-11 & Comprehensive (all attacks) & ---  & $-2.662\pm1.887$ & $69.86\pm40.77$\% & 54.1\% (65{,}400/134{,}337)         & $0.306\pm0.006$ \\
+11 & Comprehensive (all attacks) & 2/5 & $-2.236\pm1.891$ & $75.84\pm38.38$\% & 48.0\% (72{,}507/164{,}345)         & $0.305\pm0.006$ \\
 \bottomrule
-\multicolumn{7}{l}{\scriptsize ``---'' = training incomplete (seed 4 still running at reporting time). Conv.\ = converged seeds (reward variance $<0.05$ over 100 episodes).}
+\multicolumn{7}{l}{\scriptsize Conv.\ = converged seeds (reward variance $<0.05$ over 100 episodes). All configs use 5 seeds.}
 \end{tabular}
 \end{table*}

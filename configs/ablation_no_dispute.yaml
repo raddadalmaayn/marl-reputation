@@ -1,0 +1,17 @@
+name: ablation_no_dispute
+description: "Ablation: no dispute resolution — dispute_cost set extremely high so no disputes are filed"
+n_agents: 20
+max_steps: 100
+episodes: 5000
+eval_episodes: 20
+seeds: 3
+adversarial_ids: [0, 1, 2, 3, 4]
+adversarial_reward_bonus: 0.5
+collusion_groups: []
+max_sybils_per_agent: 0
+checkpoint_every: 500
+convergence_reward_variance_threshold: 0.05
+convergence_window: 100
+max_episodes_extended: 5000
+# SystemConfig override: make disputes impossible by setting cost to balance (10000 * 100)
+dispute_cost: 1000000.0

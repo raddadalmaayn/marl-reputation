@@ -1,0 +1,18 @@
+name: ablation_no_wilson
+description: "Ablation: no Wilson CI — simulated by setting max_rater_weight=1.0 min_rater_weight=1.0 (flat weights, CI widening disabled)"
+n_agents: 20
+max_steps: 100
+episodes: 5000
+eval_episodes: 20
+seeds: 3
+adversarial_ids: [0, 1, 2, 3, 4]
+adversarial_reward_bonus: 0.5
+collusion_groups: []
+max_sybils_per_agent: 0
+checkpoint_every: 500
+convergence_reward_variance_threshold: 0.05
+convergence_window: 100
+max_episodes_extended: 5000
+# SystemConfig override: disable CI-based weight scaling (flat 1.0 weights)
+min_rater_weight: 1.0
+max_rater_weight: 1.0

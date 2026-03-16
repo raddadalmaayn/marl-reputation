@@ -1,0 +1,25 @@
+\begin{table}[t]
+\centering
+\caption{Statistical significance of honest behavior ($>95\%$ threshold, one-sample $t$-test).}
+\label{tab:statistical}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}L{2.8cm}C{0.6cm}C{2.0cm}C{1.2cm}C{1.2cm}C{0.8cm}@{}}
+\toprule
+\textbf{Configuration} & \textbf{N} & \textbf{Honest \%} & \textbf{$t$} & \textbf{$p$} & \textbf{Sig.} \\
+\midrule
+config1 baseline & 5 & $0.998\pm0.001$ & $105.42$ & $0.000$ & Yes$^*$ \\
+config2 mixed & 5 & $0.997\pm0.002$ & $45.01$ & $0.000$ & Yes$^*$ \\
+config3 sybil & 5 & $0.876\pm0.057$ & $-2.59$ & $0.970$ & No \\
+config4 collusion & 5 & $0.995\pm0.002$ & $51.54$ & $0.000$ & Yes$^*$ \\
+config5 adaptive & 5 & $0.997\pm0.001$ & $75.77$ & $0.000$ & Yes$^*$ \\
+config6 self rating & 5 & $0.932\pm0.133$ & $-0.28$ & $0.602$ & No \\
+config7 admin escalation & 5 & $0.999\pm0.001$ & $83.26$ & $0.000$ & Yes$^*$ \\
+config8 evidence tamper & 5 & $0.997\pm0.001$ & $72.75$ & $0.000$ & Yes$^*$ \\
+config9 gate bypass & 5 & $0.997\pm0.002$ & $41.79$ & $0.000$ & Yes$^*$ \\
+config10 provenance replay & 5 & $0.999\pm0.001$ & $67.76$ & $0.000$ & Yes$^*$ \\
+config11 comprehensive & 5 & $0.758\pm0.384$ & $-1.00$ & $0.813$ & No \\
+\bottomrule
+\multicolumn{6}{l}{\scriptsize $^*p<0.05$, one-tailed test vs.\ honest\%$=95\%$ threshold.}
+\end{tabular}
+\end{table}

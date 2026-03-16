@@ -3,12 +3,12 @@
   "description": "5 adversarial + 15 honest \u2014 mixed population",
   "n_seeds": 5,
   "converged_count": 3,
-  "mean_eval_reward": -2.3136011904898366,
-  "std_eval_reward": 4.854608924554352,
-  "mean_eval_accuracy": 0.3584597085294292,
-  "std_eval_accuracy": 0.2502666072149474,
-  "mean_honest_pct": 0.9358348208005598,
-  "std_honest_pct": 0.12769256534296955,
+  "mean_eval_reward": -1.2742807829682445,
+  "std_eval_reward": 0.1241275691461701,
+  "mean_eval_accuracy": 0.30570546138136057,
+  "std_eval_accuracy": 0.003748774091572811,
+  "mean_honest_pct": 0.997313103680229,
+  "std_honest_pct": 0.0021022356885753335,
   "total_training_time_s": 44146.853942632675,
   "seed_results": [
     {
@@ -286,5 +286,8 @@
         }
       }
     }
-  ]
+  ],
+  "mean_defense_rate": 0.5162838115587457,
+  "total_attacks_blocked": 51348,
+  "total_attacks_attempted": 99531
 }

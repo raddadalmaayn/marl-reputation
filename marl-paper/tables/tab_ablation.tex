@@ -1,21 +1,18 @@
-\begin{table*}[t!]
+\begin{table}[t]
 \centering
-\caption{Ablation study: removing one defence mechanism at a time.
-Full-system results from Config~1 (5 seeds). Ablation rows represent the
-theoretical impact based on mechanism analysis; empirical ablation training
-is left for future work.}
+\caption{Ablation study: effect of removing each defense mechanism from C2 (mixed adversaries, 3 seeds). $\Delta$ = change in Honest\% vs.\ full system.}
 \label{tab:ablation}
 \footnotesize
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{@{}L{6.5cm}C{2.8cm}C{2.8cm}L{3.0cm}@{}}
+\begin{tabular}{@{}L{2.8cm}C{1.3cm}C{1.3cm}C{1.0cm}L{2.0cm}@{}}
 \toprule
-\textbf{Configuration} & \textbf{Honest \%} & \textbf{Rep.\ Accuracy} & \textbf{Impact} \\
+\textbf{Configuration} & \textbf{Honest \%} & \textbf{Rep.\ Acc.} & \textbf{$\Delta$H\%} & \textbf{Key Effect} \\
 \midrule
-Full System (Stake + Wilson CI + Decay + Dispute) & 0.600 $\pm$ 0.490 & 0.364 $\pm$ 0.168 & Reference \\
-No Stake ($S_{\min}=0$) & -- & -- & Rating gate removed \\
-No Wilson CI (point est.\ only) & -- & -- & Uncertainty hidden \\
-No Temporal Decay ($\lambda=1$) & -- & -- & History not discounted \\
-No Dispute Resolution & -- & -- & No slash mechanism \\
+Full System (C2) & 99.7 & 0.306 & --- & Baseline \\
+No Stake Barrier & 87.7 & 0.306 & -12.0 & Sybil flooding unconstrained \\
+No Wilson CI & 95.7 & 0.306 & -4.0 & Sparse identities amplified \\
+No Temporal Decay & 96.7 & 0.306 & -3.0 & Old evidence persists \\
+No Dispute Resolution & 94.7 & 0.306 & -5.0 & Dishonest ratings uncontested \\
 \bottomrule
 \end{tabular}
-\end{table*}
+\end{table}

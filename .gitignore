@@ -22,6 +22,17 @@ results/training_logs/*_seed*_log.json
 results/training_logs/*_seed*.json
 results/training_logs_v1_backup/
 
+# Ablation / sensitivity / IPPO per-seed logs (same exclusion rule)
+results/ablation/*_seed*_log.json
+results/ablation/*_seed*.json
+results/ablation/checkpoints/
+results/sensitivity/*_seed*_log.json
+results/sensitivity/*_seed*.json
+results/sensitivity/checkpoints/
+results/ippo/*_seed*_log.json
+results/ippo/*_seed*.json
+results/ippo/checkpoints/
+
 # Jupyter
 .ipynb_checkpoints/
 *.ipynb

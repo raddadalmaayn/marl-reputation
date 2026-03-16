@@ -1,0 +1,20 @@
+adversarial_ids:
+- 0
+- 1
+- 2
+- 3
+- 4
+adversarial_reward_bonus: 0.25
+checkpoint_every: 250
+collusion_groups: []
+convergence_reward_variance_threshold: 0.05
+convergence_window: 100
+description: 'Sensitivity sweep: adversarial_reward_bonus=0.25'
+episodes: 5000
+eval_episodes: 20
+max_episodes_extended: 3000
+max_steps: 100
+max_sybils_per_agent: 0
+n_agents: 20
+name: sweep_bonus_0p25
+seeds: 2
