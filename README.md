@@ -177,7 +177,7 @@ MIT License. See [LICENSE](LICENSE).
 
 ## Contact
 
-**Raddad Almaayn** — ralmaayn@unm.edu
+**Raddad Almaayn** — raddadalmaayn@unm.edu
 Dept. of Electrical and Computer Engineering, University of New Mexico, USA
 
 > This repository is a draft. Author list will be updated upon publication.
