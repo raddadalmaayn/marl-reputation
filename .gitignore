@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+.env
+
+# PyTorch checkpoints — large binary files, not committed
+results/checkpoints/
+
+# Per-seed training logs — large JSON files (10k episodes each)
+results/training_logs/*_seed*_log.json
+results/training_logs/*_seed*.json
+results/training_logs_v1_backup/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp / log files
+/tmp/
+*.log
+*.tmp

@@ -1,0 +1,28 @@
+\begin{table*}[t!]
+\centering
+\caption{Cross-evaluation comparison: scripted attack results from the companion blockchain
+system~\cite{almaayn2024unified} vs.\ MARL empirical block rates from this work.
+Scripted column: BLOCKED = 100\% rejection, PARTIAL = some actions succeed.
+MARL column: block rate over tail episodes; honest \% = training-tail mean.}
+\label{tab:attack_comparison}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}L{3.8cm}C{2.0cm}C{1.8cm}C{2.6cm}C{2.6cm}@{}}
+\toprule
+\textbf{Attack Vector} & \textbf{Scripted} & \textbf{Scripted} & \textbf{MARL Block Rate} & \textbf{MARL Honest \%} \\
+                        & \textbf{Outcome}  & \textbf{Latency}  & \textbf{(this work)}     & \textbf{(this work)} \\
+\midrule
+Self-rating             & BLOCKED   & 12.6\,ms  & \textbf{100.0\%} (5{,}295/5{,}295)  & $93.2\pm13.3$\% \\
+Sybil flooding          & PARTIAL   & 480\,ms   & 52.0\% (24{,}361/47{,}038)          & $87.6\pm5.7$\% \\
+Collusion ring          & PARTIAL   & 203\,ms   & 58.3\% (25{,}584/43{,}799)          & $99.5\pm0.2$\% \\
+Admin escalation        & BLOCKED   & 4.0\,ms   & \textbf{100.0\%} (391/391)          & $99.9\pm0.1$\% \\
+Unauthorized AddAdmin   & BLOCKED   & 3.2\,ms   & \textbf{100.0\%} (391/391)          & $99.9\pm0.1$\% \\
+Evidence tampering      & PARTIAL   & 99.5\,ms  & 81.5\% (411/507)                    & $99.7\pm0.1$\% \\
+Reputation gate bypass  & BLOCKED   & 602\,ms   & \textbf{100.0\%} (582/582)          & $99.7\pm0.2$\% \\
+Provenance replay       & BLOCKED   & 610\,ms   & 27.1\% (21{,}797/80{,}451)          & $99.9\pm0.1$\% \\
+\midrule
+\textbf{All attacks (C11)} & ---    & ---       & 54.1\% (65{,}400/134{,}337)         & $69.9\pm40.8$\% \\
+\bottomrule
+\multicolumn{5}{l}{\scriptsize Admin escalation and Unauthorized AddAdmin share C7 training results (same action class).}
+\end{tabular}
+\end{table*}

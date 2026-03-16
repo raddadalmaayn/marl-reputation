@@ -1,0 +1,16 @@
+name: config11_comprehensive
+description: "All 9 attack vectors simultaneously — comprehensive adversarial stress test"
+n_agents: 20
+max_steps: 100
+episodes: 5000
+eval_episodes: 20
+seeds: 5
+adversarial_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+adversarial_reward_bonus: 1.0
+collusion_groups: [[0, 1, 2, 3]]
+max_sybils_per_agent: 3
+enabled_attacks: [7, 8, 9, 10, 11]
+checkpoint_every: 250
+convergence_reward_variance_threshold: 0.05
+convergence_window: 100
+max_episodes_extended: 10000

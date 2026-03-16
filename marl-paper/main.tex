@@ -1,0 +1,152 @@
+% ============================================================================
+% Adversarial Evaluation of a Blockchain-Based Bayesian Reputation System
+% Using Multi-Agent Reinforcement Learning
+% IEEE Xplore — IEEEtran Journal Style
+% ============================================================================
+
+\documentclass[journal]{IEEEtran}
+
+% ---- Font encoding and input -----------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% ---- Microtypography -------------------------------------------------------
+\usepackage[protrusion=true, expansion=true, final]{microtype}
+\usepackage[htt]{hyphenat}
+\emergencystretch=4em
+
+% ---- Mathematics ------------------------------------------------------------
+\usepackage{amsmath,amssymb,amsfonts}
+
+% ---- Graphics and color ----------------------------------------------------
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+% ---- TikZ and PGF ----------------------------------------------------------
+\usepackage{tikz}
+\usetikzlibrary{
+  shapes.geometric,
+  arrows.meta,
+  positioning,
+  fit,
+  calc,
+  backgrounds,
+  decorations.pathreplacing,
+  automata
+}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% ---- Float control ---------------------------------------------------------
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+
+% ---- Tables ----------------------------------------------------------------
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+
+% ---- Algorithms ------------------------------------------------------------
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% ---- Code listings ---------------------------------------------------------
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\scriptsize,
+  breaklines=true,
+  breakatwhitespace=false,
+  postbreak=\mbox{\textcolor{gray}{$\hookrightarrow$}\space},
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue!70!black}\bfseries,
+  commentstyle=\color{green!50!black}\itshape,
+  stringstyle=\color{red!60!black},
+  tabsize=2,
+  showstringspaces=false,
+  captionpos=b,
+  literate={_}{{\textunderscore\allowbreak}}{1}
+           {:}{{\text{:}\allowbreak}}{1}
+}
+
+% ---- Hyperlinks ------------------------------------------------------------
+\usepackage[
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  citecolor=blue!60!black,
+  urlcolor=blue!60!black,
+  breaklinks=true
+]{hyperref}
+\usepackage{url}
+\urlstyle{tt}
+
+% ---- Lists -----------------------------------------------------------------
+\usepackage{enumitem}
+
+% ---- Custom colors ---------------------------------------------------------
+\definecolor{marlblue}   {RGB}{31,119,180}
+\definecolor{marlgreen}  {RGB}{44,160,44}
+\definecolor{marlorange} {RGB}{255,127,14}
+\definecolor{alertred}   {RGB}{200,50,50}
+\definecolor{tabheader}  {RGB}{220,230,242}
+
+% ---- Custom column types ---------------------------------------------------
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+% ---- Inline code helpers ---------------------------------------------------
+\newcommand{\icode}[1]{{\small\texttt{#1}}}
+\makeatletter
+\newcommand{\lcode}[1]{%
+  \begingroup
+  \ttfamily\small
+  \hyphenchar\font=`\-\relax
+  \@temptokena{#1}%
+  #1%
+  \endgroup
+}
+\makeatother
+
+% ===========================================================================
+\begin{document}
+% ===========================================================================
+
+% ---- Title block (IEEE style) ----------------------------------------------
+\title{Adversarial Evaluation of a Blockchain-Based Bayesian Reputation\\
+System Using Multi-Agent Reinforcement Learning:\\
+Architecture, Defense Mechanisms, and Empirical Analysis}
+
+
+% Authors anonymized for draft — to be filled upon submission
+\author{[Draft — Authors Omitted for Review]}
+
+
+\maketitle
+
+% ---- Running head (IEEE journal style) -------------------------------------
+\markboth{IEEE TRANSACTIONS ON DEPENDABLE AND SECURE COMPUTING, 2026}%
+{Almaayn \MakeLowercase{\textit{et al.}}: MARL Adversarial Evaluation of Blockchain Reputation for AM Supply Chains}
+
+% ===========================================================================
+% Body sections (each in a separate file)
+% ===========================================================================
+\input{abstract_introduction}
+\input{related_work}
+\input{system_model}
+\input{marl_framework}
+\input{evaluation}
+\input{discussion}
+\input{conclusion}
+
+\section*{Acknowledgment}
+This work was supported in part by the Department of Electrical and Computer
+Engineering, University of New Mexico.
+
+\bibliographystyle{IEEEtran}
+\bibliography{bibliography}
+
+\end{document}

@@ -1,0 +1,20 @@
+\begin{table*}[t!]
+\centering
+\caption{Evaluation summary across five experimental configurations (mean $\pm$ std, 5 seeds each).
+Honest~\% = fraction of rating actions matching ground truth.
+Accuracy = mean $|$score $-$ true\_quality$|$.}
+\label{tab:summary}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}L{4.5cm}C{1.5cm}C{2.8cm}C{2.8cm}C{2.8cm}@{}}
+\toprule
+\textbf{Configuration} & \textbf{Converged} & \textbf{Mean Reward} & \textbf{Honest \%} & \textbf{Rep.\ Accuracy} \\
+\midrule
+All Honest (Baseline) & 5/5 & 0.015 $\pm$ 0.030 & 0.600 $\pm$ 0.490 & 0.364 $\pm$ 0.168 \\
+Mixed (5 Adv. + 15 Honest) & 3/5 & -2.314 $\pm$ 4.855 & 0.936 $\pm$ 0.128 & 0.358 $\pm$ 0.250 \\
+Sybil Attack & 5/5 & -0.548 $\pm$ 0.548 & 0.800 $\pm$ 0.400 & 0.339 $\pm$ 0.181 \\
+Collusion Ring & 5/5 & 0.027 $\pm$ 0.088 & 1.000 $\pm$ 0.000 & 0.232 $\pm$ 0.189 \\
+Adaptive Adversary (2$\times$) & 2/5 & 0.289 $\pm$ 0.075 & 1.000 $\pm$ 0.000 & 0.099 $\pm$ 0.044 \\
+\bottomrule
+\end{tabular}
+\end{table*}

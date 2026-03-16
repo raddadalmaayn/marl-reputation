@@ -1,0 +1,110 @@
+% ===========================================================================
+% VI. Discussion
+% ===========================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Defense Mechanism Effectiveness}
+
+The three defense classes exhibit qualitatively different effectiveness
+profiles under MARL adversarial training.
+
+\textbf{Deterministic defenses} (self-rating, admin escalation, gate bypass)
+achieve 100\% block rates because the negative expected return is
+unconditional: no matter how many times an adversarial agent attempts these
+actions, the penalty always exceeds the reward bonus.  Under MARL training,
+this means that the gradient signal is uniformly negative for these actions,
+and the policy converges to never selecting them.  The one caveat is that
+the policy may still assign non-zero probability to these actions at the
+local equilibrium (observed in C6's $93.2\%$ honest rate), reflecting that
+the entropy coefficient $c_e = 0.05$ keeps the policy stochastic even at
+convergence.  Reducing $c_e$ at late training stages could eliminate this
+residual.
+
+\textbf{Probabilistic detection} (evidence tampering, $p=0.80$) produces
+a nuanced equilibrium.  The negative expected return ($\mathbb{E}[R] = -1.4$
+per attempt) drives convergence toward honest behavior, but the nonzero
+evasion probability ($20\%$) creates a reward signal variance that prevents
+full convergence.  In a real deployment, the detection probability could be
+increased (e.g., by requiring on-chain cryptographic commitments for all
+evidence) to push the equilibrium further toward deterrence.
+
+\textbf{Economic deterrence} (Sybil, collusion) provides only $52$--$58\%$
+block rates.  This is by design: economic mechanisms do not prevent attacks
+but impose costs that limit their profitability.  The honest population
+still converges to $\geq\!87\%$ honest behavior even under Sybil pressure
+(C3: $87.6\%$), confirming that economic deterrence is effective at the
+population level even if individual Sybil actions succeed.  Tightening the
+stake cost or CI widening rate would shift this equilibrium further.
+
+\subsection{Noop Equilibrium and Rational Abstention}
+
+An important observation is that all agents — including adversarial agents
+with reward bonuses up to $2\times$ — ultimately converge to \emph{rational
+abstention}: preferring no-operation (A0) over risky attack actions when
+the expected return is negative.  This is consistent with the game-theoretic
+prediction that rational agents will not repeatedly attempt actions with
+negative expected value, regardless of the reward bonus magnitude.  The
+MARL training validates that this theoretical prediction holds empirically
+for all single-attack configurations.
+
+\subsection{Multi-Vector Attack as the Open Challenge}
+
+The comprehensive configuration (C11) reveals a qualitatively different
+challenge.  With $50\%$ adversarial population and coordinated multi-vector
+attacks, the interaction between attack vectors creates emergent dynamics
+that no single-attack defense fully handles.  Specifically:
+\begin{itemize}[noitemsep]
+  \item Sybil identities can attempt gate bypass with the Sybil's reduced
+        stake, creating a compound attack that neither the Sybil defense
+        nor the gate bypass defense fully handles in isolation.
+  \item Colluding agents can use provenance replay to amplify positive
+        ratings for colluding partners, combining two partially-defended
+        attack vectors.
+  \item The $50\%$ adversarial fraction means that even the defense dividend
+        ($+0.1$ to honest agents per blocked attack) cannot overcome the
+        adversarial reward accumulation from unblocked Sybil and colluding
+        actions.
+\end{itemize}
+Addressing C11 likely requires extending the observation space with
+cross-agent comparison (e.g., including the distribution of stake levels
+across all agents) and introducing a cooperative honest majority protocol
+that enables honest agents to identify and coordinate against adversarial
+clusters.
+
+\subsection{Methodology Comparison with Scripted Evaluation}
+
+Our MARL results are broadly consistent with the scripted evaluation in the
+companion paper~\cite{almaayn2024unified}: both find 100\% block rates for
+self-rating, admin escalation, and gate bypass; both find partial mitigation
+for Sybil and collusion; both find that evidence tampering is probabilistically
+defended.  The MARL evaluation adds quantitative block rate measurements
+(previously only pass/fail was reported), reveals the honest \% convergence
+trajectory, and discovers the multi-vector challenge in C11.  The two methods
+are therefore complementary: scripted evaluation confirms defense behavior for
+specific known exploits; MARL training provides convergence guarantees and
+discovers emergent multi-vector dynamics.
+
+\subsection{Limitations}
+
+\textbf{Simulation fidelity:} The MARL environment is a simplified model of
+the blockchain system.  It abstracts away network latency, smart contract
+execution overhead, MVCC conflicts, and Fabric-level permission enforcement.
+Defense mechanisms are modeled as reward penalties rather than hard code
+rejections; a real deployment cannot override a successful chaincode
+transaction via a negative reward.
+
+\textbf{Incomplete seeds:} C2 and C11 reported 4/5 seeds; the fifth seed
+(seed 4) was still training at reporting time.  The high variance for C11
+($\pm\!40.8\%$) means that the incomplete sample may not fully represent
+the distribution of outcomes.
+
+\textbf{Fixed adversary population:} The adversarial fraction is fixed at
+initialization and does not change during training.  In practice, adversarial
+agents may enter or leave the supply chain, and the defense system should be
+evaluated under dynamic adversarial populations.
+
+\textbf{Observation space completeness:} The 14-dimensional observation does
+not include other agents' actions or reputations directly.  Including partial
+observability of peer behavior could improve both honest convergence and
+adversarial detection.

@@ -1,0 +1,21 @@
+\begin{table*}[t!]
+\centering
+\caption{Ablation study: removing one defence mechanism at a time.
+Full-system results from Config~1 (5 seeds). Ablation rows represent the
+theoretical impact based on mechanism analysis; empirical ablation training
+is left for future work.}
+\label{tab:ablation}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}L{6.5cm}C{2.8cm}C{2.8cm}L{3.0cm}@{}}
+\toprule
+\textbf{Configuration} & \textbf{Honest \%} & \textbf{Rep.\ Accuracy} & \textbf{Impact} \\
+\midrule
+Full System (Stake + Wilson CI + Decay + Dispute) & 0.600 $\pm$ 0.490 & 0.364 $\pm$ 0.168 & Reference \\
+No Stake ($S_{\min}=0$) & -- & -- & Rating gate removed \\
+No Wilson CI (point est.\ only) & -- & -- & Uncertainty hidden \\
+No Temporal Decay ($\lambda=1$) & -- & -- & History not discounted \\
+No Dispute Resolution & -- & -- & No slash mechanism \\
+\bottomrule
+\end{tabular}
+\end{table*}

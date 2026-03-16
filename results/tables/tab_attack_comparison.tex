@@ -1,0 +1,31 @@
+\begin{table*}[t!]
+\centering
+\caption{Comparison of MARL-discovered adaptive attacks (this work) vs.\ scripted attacks
+from the deployed am-unified system~\cite{almaayn2026reputation}.}
+\label{tab:attack_comparison}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}L{4.5cm}L{2.5cm}C{2.0cm}@{}}
+\toprule
+\textbf{Scripted Attack} & \textbf{Outcome} & \textbf{Detection Latency} \\
+\midrule
+Self-Rating & Blocked & 12.6\,ms \\
+Sybil Flood (5 nodes) & Partial & 368.6\,ms \\
+Collusion Ring & Partial & 131.1\,ms \\
+Unauth.\ SetReputationGate & Blocked & 9.0\,ms \\
+Insufficient Stake & Blocked & 560.4\,ms \\
+Evidence Tampering & Partial & 65.2\,ms \\
+Reputation Gate Bypass & Blocked & 571.1\,ms \\
+Provenance Replay & Blocked & 570.6\,ms \\
+\midrule
+\multicolumn{3}{l}{\textit{MARL Adaptive Attack Scenarios}} \\
+\midrule
+\textbf{Scenario} & \textbf{Honest \%} & \textbf{Mechanism} \\
+\midrule
+Mixed adversaries (Config~2) & 0.94 $\pm$ 0.13 & Adaptive rational agents \\
+Sybil attack (Config~3) & 0.80 $\pm$ 0.40 & Stake-cost deterrence \\
+Collusion ring (Config~4) & 1.00 $\pm$ 0.00 & CI widening + meta-rep weight \\
+Max incentive (Config~5) & 1.00 $\pm$ 0.00 & Breaking-point analysis \\
+\bottomrule
+\end{tabular}
+\end{table*}

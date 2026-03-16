@@ -1,0 +1,40 @@
+% ===========================================================================
+% VII. Conclusion
+% ===========================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented a MARL-based adversarial evaluation framework for a
+blockchain Bayesian reputation system designed for additive manufacturing
+supply chains.  A 12-action PettingZoo AEC environment models 9 attack
+vectors derived from the companion blockchain evaluation, trained with
+MAPPO across 11 experimental configurations and 5 seeds each.
+
+The evaluation yields three principal findings.  First, \emph{deterministic
+defenses are effective}: self-rating, admin escalation, and gate bypass
+attacks are completely deterred (100\% block rate) once adversarial agents
+learn through training that the negative expected return is unconditional.
+Second, \emph{probabilistic defenses create partial equilibria}: evidence
+tampering achieves an $81.5\%$ empirical block rate matching the designed
+$p=0.80$ detection probability; the $20\%$ evasion probability prevents
+full deterrence but maintains $99.7\%$ honest population behavior.  Third,
+\emph{economic deterrence constrains but does not eliminate Sybil and
+collusion}: block rates of $52$--$58\%$ limit exploitation without
+preventing all adversarial actions, and the honest population converges to
+$\geq\!87\%$ honest behavior even under sustained Sybil pressure.
+
+The comprehensive multi-vector attack (C11) identifies the primary open
+challenge: with $50\%$ adversarial population and coordinated multi-vector
+attacks, honest convergence degrades to $69.9\%$ and the defense system
+achieves only a $54.1\%$ block rate.  Addressing this challenge likely
+requires extending the observation space with cross-agent comparison signals
+and introducing cooperative majority protocols among honest agents.
+
+This work demonstrates that MARL-based adversarial evaluation is a
+productive complement to scripted attack injection for reputation system
+security analysis.  The two methodologies agree on deterministic defense
+outcomes, while MARL additionally quantifies block rates, reveals honest
+convergence dynamics, and discovers emergent multi-vector challenges that
+static scripting cannot anticipate.  The complete implementation —
+environment, training harness, configurations, and results — is released
+as an open-source reference for the community.

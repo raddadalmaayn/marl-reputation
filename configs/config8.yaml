@@ -1,0 +1,16 @@
+name: config8_evidence_tamper
+description: "Attack 6: Evidence tampering — 80% detection rate"
+n_agents: 20
+max_steps: 100
+episodes: 5000
+eval_episodes: 20
+seeds: 5
+adversarial_ids: [0, 1, 2, 3, 4]
+adversarial_reward_bonus: 0.5
+collusion_groups: []
+max_sybils_per_agent: 0
+enabled_attacks: [9]
+checkpoint_every: 250
+convergence_reward_variance_threshold: 0.05
+convergence_window: 100
+max_episodes_extended: 10000

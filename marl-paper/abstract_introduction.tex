@@ -1,0 +1,131 @@
+
+% ===========================================================================
+% Abstract
+% ===========================================================================
+\begin{center}
+\textbf{Abstract:}
+\end{center}
+\begin{quote}
+\small
+Blockchain-based reputation systems for additive manufacturing (AM) supply
+chains must withstand strategic adversarial manipulation: actors who
+misreport quality, forge identities, collude to amplify scores, or exploit
+access-control weaknesses to gain unearned trust.  Formal game-theoretic
+analysis of such multi-agent strategic interactions is intractable for
+realistic system parameters, yet prior evaluations rely exclusively on
+static test scripts that probe a fixed set of known attack patterns.  This
+paper presents a complementary methodology in which \emph{learned
+adversaries} trained simultaneously with honest agents using Multi-Agent
+Proximal Policy Optimization (MAPPO) continuously search for exploitable
+weaknesses across a 12-action, 14-dimensional observation space.  We model
+a Bayesian Beta-reputation system with Wilson 95\% confidence intervals,
+write-time exponential temporal decay, and stake-based economic incentives,
+and evaluate it across 11 experimental configurations spanning 9 distinct
+attack classes: self-rating manipulation, Sybil flooding, collusion rings,
+administrative privilege escalation, evidence tampering, reputation-gate
+bypass, provenance replay, and combinations thereof.  Trained across 5
+independent random seeds per configuration (10{,}000 episodes per seed),
+the honest population converges to $\geq\!99.7\%$ honest behavior in 8 of 9
+single-attack configurations.  Deterministic defense mechanisms achieve
+100\% block rates for self-rating, administrative escalation, and gate bypass
+attacks; probabilistic detection ($p=0.80$) yields an 81.5\% empirical block
+rate for evidence tampering; and economic deterrence constrains Sybil and
+collusion exploitation to 52--58\% without eliminating those strategic modes.
+The comprehensive multi-vector configuration identifies the primary open
+challenge: concurrent multi-vector attacks degrade honest convergence to
+$69.9\%$ in the training tail with a 54.1\% defense hold rate across
+134{,}337 attack attempts.  All source code, configurations, and training
+logs are released as a reproducible reference implementation.
+\end{quote}
+
+\vspace{4pt}
+{\small\textbf{Keywords:} multi-agent reinforcement learning; adversarial
+evaluation; blockchain; reputation system; Bayesian inference; additive
+manufacturing; supply chain security; MAPPO; PettingZoo; defense mechanisms}
+\vspace{10pt}
+\hrule
+
+% ===========================================================================
+% I. Introduction
+% ===========================================================================
+\section{Introduction}
+\label{sec:intro}
+
+Additive manufacturing (AM) supply chains are inherently multi-stakeholder:
+material certification labs, print service bureaus, post-processing vendors,
+quality inspectors, logistics providers, and OEMs each contribute to and
+depend upon the collective trustworthiness of the supply chain.
+Blockchain-based reputation systems have been proposed as a mechanism to
+encode this distributed trust into a tamper-evident ledger, so that future
+supply chain participants can condition their cooperation decisions on the
+demonstrated performance history of their peers~\cite{almaayn2024unified,
+nakamoto2008bitcoin, androulaki2018hyperledger}.
+
+A reputation system is only as valuable as its resistance to manipulation.
+An actor who can inflate their own score through self-rating, or who can
+suppress competitors' scores through collusion or Sybil attacks, undermines
+the very signal the system is designed to provide.  The canonical approach
+to adversarial evaluation is scripted attack injection: a tester writes
+fixed exploit sequences targeting known vulnerabilities, executes them
+against a running system, and reports which defenses hold~\cite{ferretti2021blockchain,
+douceur2002sybil}.  This methodology is rigorous for the attacks it covers
+but cannot discover emergent strategies that the analyst did not anticipate.
+
+\emph{Multi-Agent Reinforcement Learning} (MARL) offers a complementary
+evaluation paradigm~\cite{lowe2017multi, foerster2018counterfactual,
+yu2021surprising}.  When adversarial agents learn their policies by trial
+and error, competing against a simultaneously learning honest population,
+they effectively conduct a continuous automated search for exploitable
+weaknesses.  Defenses that are robust under MARL training provide stronger
+robustness guarantees than defenses that hold only against hand-crafted
+exploits.
+
+\subsection{Problem Statement}
+
+We address the following research question: \emph{Can a Bayesian
+Beta-reputation system with stake-based economic incentives, Wilson
+confidence-interval scoring, and layered access controls withstand
+adversarial agents that learn optimal manipulation strategies through
+multi-agent reinforcement learning?}  Specifically:
+\begin{enumerate}[label=\textbf{RQ\arabic*.}, leftmargin=*, noitemsep]
+  \item Do honest agents converge to high honest-action rates despite the
+        presence of adversarial peers, and how does convergence depend on the
+        type and intensity of attack?
+  \item Which defense mechanisms provide deterministic versus probabilistic
+        protection, and what residual exploitation rate do remaining attack
+        vectors achieve after convergence?
+  \item At what adversarial population fraction does multi-vector attack
+        coordination overwhelm the defense layer, and does the system degrade
+        gracefully or catastrophically?
+\end{enumerate}
+
+\subsection{Contributions}
+
+This paper makes the following contributions:
+\begin{itemize}[noitemsep]
+  \item A \emph{PettingZoo AEC environment} modeling a Bayesian reputation
+        system with 12 discrete actions encompassing all 9 attack vectors
+        from the companion blockchain evaluation~\cite{almaayn2024unified}
+        and a 14-dimensional observation space (\S\ref{sec:env}).
+  \item A \emph{MAPPO training harness} with shared policy networks, GAE
+        advantage estimation, and per-seed convergence tracking, enabling
+        reproducible multi-seed evaluation across 11 experimental
+        configurations (\S\ref{sec:marl}).
+  \item \emph{Empirical defense characterization} across three classes:
+        deterministic penalty ($-5.0$ per attempt), probabilistic detection
+        ($p=0.80$), and economic deterrence; quantified as block rates over
+        10{,}000-episode runs with 5 independent seeds each (\S\ref{sec:eval}).
+  \item Identification of the \emph{comprehensive multi-vector attack} as the
+        primary open challenge, with honest convergence degrading to $69.9\%$
+        and 54.1\% defense hold rate across 134{,}337 attack attempts
+        (\S\ref{sec:discussion}).
+\end{itemize}
+
+\subsection{Paper Organization}
+
+Section~\ref{sec:related} reviews related work.
+Section~\ref{sec:sysmodel} describes the reputation system model.
+Section~\ref{sec:marl} details the MARL framework and training procedure.
+Section~\ref{sec:eval} presents experimental results.
+Section~\ref{sec:discussion} discusses key findings and limitations.
+Section~\ref{sec:conclusion} concludes.

@@ -1,0 +1,82 @@
+% ===========================================================================
+% II. Related Work
+% ===========================================================================
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Blockchain-Based Reputation Systems for Supply Chains}
+
+The application of blockchain technology to supply-chain reputation has been
+studied extensively.  Carboni~\cite{carboni2015feedback} demonstrated that
+decentralized feedback mechanisms can replace centralized rating authorities
+without sacrificing data integrity.  Sharples and Domingue~\cite{sharples2016blockchain}
+explored the use of blockchain in educational credentialing, establishing
+the general principle that tamper-evident ledgers can encode trust signals
+across organizational boundaries.  More recent work on AM-specific supply
+chains~\cite{almaayn2024unified} implemented an integrated provenance-plus-reputation
+system on Hyperledger Fabric v3.1.0, achieving sub-54~ms integrated write
+latency and 280--304~TPS concurrent throughput, while defending against 9
+scripted attack vectors in a static evaluation.  Our work directly builds
+upon that system's threat model and extends the evaluation methodology from
+static scripted injection to learned adversarial agents.
+
+\subsection{Adversarial Reputation Manipulation}
+
+Sybil attacks on reputation systems were formalized by Douceur~\cite{douceur2002sybil},
+who showed that without a centralized authority, any reputation system is
+vulnerable to identity multiplication.  Subsequent work proposed stake-based
+economic deterrence~\cite{levien2009attack}, Wilson confidence
+intervals~\cite{wilson1927probable} to widen uncertainty around sparse
+identities, and gossip-protocol-based cross-verification.  Collusion
+detection has been studied via graph-theoretic methods~\cite{christodoulou2019collusion}
+and reinforcement-learning-based adaptive agents~\cite{ganesh2019reinforcement}.
+Evidence-tampering defenses typically rely on cryptographic commitments or
+off-chain audit logs~\cite{ferretti2021blockchain}.  Our work operationalizes
+all of these attack classes as discrete actions in a MARL environment,
+enabling simultaneous empirical comparison under identical training conditions.
+
+\subsection{Multi-Agent Reinforcement Learning for Security Evaluation}
+
+MARL has been applied to network security in several domains.
+Lowe et al.~\cite{lowe2017multi} introduced Multi-Agent DDPG (MADDPG), demonstrating
+that centralized training with decentralized execution can stabilize
+competitive multi-agent environments.  Foerster et al.~\cite{foerster2018counterfactual}
+introduced counterfactual multi-agent policy gradients (COMA) for cooperative
+settings.  OpenAI Five~\cite{berner2019dota} and AlphaStar~\cite{vinyals2019grandmaster}
+demonstrated that MARL agents can discover sophisticated emergent strategies
+through self-play, including coordination and deception.
+
+In the security domain, Pham et al.~\cite{pham2021deep} applied MARL to
+autonomous penetration testing, while Hammar and Stadler~\cite{hammar2022learning}
+trained RL agents for intrusion prevention in computer networks.  Xu et
+al.~\cite{xu2020adversarial} used adversarial MARL to evaluate Byzantine
+robustness of federated learning.  Closest to our setting, Ngan et
+al.~\cite{ngan2020adversarial} applied RL to reputation-based cooperative
+networks, finding that agents with higher reward bonuses for adversarial
+actions can undermine group cooperation when defenses are absent.  Our work
+differs in explicitly modeling layered defense mechanisms and quantifying
+block rates under each defense class, providing actionable security
+characterization rather than a proof of vulnerability.
+
+\subsection{Multi-Agent PPO}
+
+Yu et al.~\cite{yu2021surprising} showed that applying PPO independently to
+each agent (IPPO) with a shared policy network is surprisingly competitive
+with more complex MARL algorithms in cooperative settings.  MAPPO adds
+centralized value functions to this framework, providing variance reduction
+without sacrificing decentralized execution.  We adopt MAPPO with a shared
+actor-critic network (MLP 256$\to$128$\to$ReLU), using GAE advantage
+estimation~\cite{schulman2015high} with $\lambda=0.95$, clip ratio $0.2$,
+and higher entropy coefficient ($0.05$) to encourage exploration of all 12
+actions during early training.
+
+\subsection{PettingZoo and AEC Environments}
+
+Terry et al.~\cite{terry2021pettingzoo} introduced PettingZoo, a standard
+API for multi-agent environments using the Agent Environment Cycle (AEC)
+formalism~\cite{liu2019aec}.  AEC environments model sequential agent
+selection with explicit termination and truncation signals, matching the
+turn-based structure of blockchain transaction processing where one agent
+submits a transaction at a time.  Our environment follows the AEC contract
+strictly, passing \texttt{None} actions for terminated agents and advancing
+the agent selector through the full population each episode step.

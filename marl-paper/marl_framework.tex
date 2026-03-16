@@ -1,0 +1,196 @@
+% ===========================================================================
+% IV. MARL Framework
+% ===========================================================================
+\section{Multi-Agent Reinforcement Learning Framework}
+\label{sec:marl}
+
+\subsection{Environment Design}
+\label{sec:env}
+
+The environment is implemented as a PettingZoo AEC environment~\cite{terry2021pettingzoo}
+with $N = 20$ agents.  At each step, the environment selects one agent in
+round-robin order; that agent observes the current state, selects an action,
+and receives an immediate scalar reward.  An \emph{episode} consists of
+$T = 100$ steps shared across all agents (i.e., each agent acts approximately
+5 times per episode).
+
+\subsubsection{Observation Space}
+Each agent $i$ observes a 14-dimensional vector:
+\begin{equation}
+  o_i = [\mu_i,\ w_i,\ s_i,\ \alpha_i,\ \beta_i,\ \mu_j,\ w_j,\
+         r_i,\ d_i,\ d^{\text{lost}}_i,\ t,\ n^{\text{sybil}}_i,\
+         B_{\text{norm}},\ g_i],
+  \label{eq:obs}
+\end{equation}
+where $\mu_i$ is agent $i$'s own score, $w_i$ its CI width, $s_i$ its
+stake, $\alpha_i$ and $\beta_i$ its Beta parameters, $\mu_j$ and $w_j$
+are the current target's score and CI width, $r_i$ is the number of ratings
+submitted this episode, $d_i$ and $d^{\text{lost}}_i$ are disputes received
+and lost, $t \in [0,1]$ is normalized episode time, $n^{\text{sybil}}_i$
+is the agent's Sybil count, $B_{\text{norm}}$ is the normalized attack-block
+count, and $g_i \in \{0,1\}$ is gate eligibility.  All continuous fields
+are clipped to $[-5, 5]$.
+
+\subsubsection{Action Space}
+The 12-dimensional discrete action space is:
+\begin{enumerate}[label=\textbf{A\arabic*.}, leftmargin=*, noitemsep, start=0]
+  \item No-operation (abstain)
+  \item Submit positive honest rating
+  \item Submit negative honest rating
+  \item Submit positive dishonest rating
+  \item Submit negative dishonest rating
+  \item Create Sybil identity
+  \item File dispute
+  \item Attempt self-rating (attack)
+  \item Attempt admin escalation (attack)
+  \item Tamper with evidence (attack)
+  \item Attempt gate bypass (attack)
+  \item Attempt provenance replay (attack)
+\end{enumerate}
+Actions 7--11 are the five explicit attack-class actions corresponding to
+the five programmable attack vectors in the blockchain companion
+system~\cite{almaayn2024unified}; actions 3--5 implement the remaining
+attack vectors (dishonest rating, Sybil) through non-attack actions with
+adversarial intent.
+
+\subsubsection{Reward Function}
+The reward for agent $i$ at step $t$ is:
+\begin{equation}
+  r_i^t = R_{\text{base}}(a_i^t) + R_{\text{defense}}(a_i^t) + R_{\text{dividend}}^t,
+  \label{eq:reward}
+\end{equation}
+where:
+\begin{align}
+  R_{\text{base}}(a) &= \begin{cases}
+    +0.1 & a \in \{1,2\}\ (\text{honest rating}) \\
+    -0.5 & a \in \{3,4\}\ (\text{dishonest, detected}) \\
+    +b   & a \in \{3,4\}\ (\text{dishonest, undetected}) \\
+    0.0  & a = 0
+  \end{cases} \label{eq:base_reward} \\
+  R_{\text{defense}}(a) &= \begin{cases}
+    -5.0 & a \in \{7, 8, 11\}\ (\text{deterministic block}) \\
+    -2.0 & a = 9 \wedge \text{detected}\ (p=0.80) \\
+    -3.0 & a = 10\ (\text{gate bypass}) \\
+    0.0  & \text{otherwise}
+  \end{cases} \label{eq:defense_reward} \\
+  R_{\text{dividend}}^t &= +0.1 \cdot \mathbb{1}[\text{attack blocked this step}].
+  \label{eq:dividend}
+\end{align}
+The defense dividend $R_{\text{dividend}}^t$ is received by \emph{all} honest
+agents when any attack is blocked in the current step, creating a collective
+incentive to indirectly reinforce the defense layer.  Adversarial agents
+have an additional reward bonus $b \in [0.5, 2.0]$ for successful dishonest
+actions, as specified per configuration in Table~\ref{tab:configs}.
+
+\subsection{MAPPO Training}
+\label{sec:mappo}
+
+We train agents using MAPPO with a shared actor-critic
+network~\cite{yu2021surprising}.  The network architecture is:
+\begin{equation}
+  f_\theta(o) = \text{ReLU}(W_2\,\text{ReLU}(W_1 o + b_1) + b_2),
+  \label{eq:network}
+\end{equation}
+where $W_1 \in \mathbb{R}^{256 \times 14}$ and $W_2 \in \mathbb{R}^{128
+\times 256}$, followed by separate linear actor and critic heads.  Sharing
+parameters across all agents means that the policy represents a general
+strategy conditioned only on the agent's own observation; this is appropriate
+because all agents are structurally symmetric (they differ only in their
+current state, not their capabilities).
+
+\subsubsection{PPO Update}
+At the end of each episode, the rollout buffer contains all transitions from
+all agents.  GAE advantages are computed per-agent:
+\begin{equation}
+  \hat{A}_t = \sum_{l=0}^{\infty}(\gamma\lambda)^l \delta_{t+l},\quad
+  \delta_t = r_t + \gamma V(o_{t+1}) - V(o_t),
+  \label{eq:gae}
+\end{equation}
+with $\gamma = 0.99$ and $\lambda = 0.95$.  All transitions are pooled into
+a single minibatch for the PPO clipped surrogate update:
+\begin{equation}
+  \mathcal{L}_{\text{clip}} = \mathbb{E}_t\Bigl[
+    \min\bigl(r_t(\theta)\hat{A}_t,\
+    \text{clip}(r_t(\theta), 1\!-\!\epsilon, 1\!+\!\epsilon)\hat{A}_t\bigr)
+  \Bigr],
+  \label{eq:ppo_clip}
+\end{equation}
+where $r_t(\theta) = \pi_\theta(a_t|o_t)/\pi_{\theta_{\text{old}}}(a_t|o_t)$
+and $\epsilon = 0.2$.  The full loss is:
+\begin{equation}
+  \mathcal{L} = -\mathcal{L}_{\text{clip}} + c_v \mathcal{L}_{\text{VF}} - c_e H[\pi_\theta],
+  \label{eq:full_loss}
+\end{equation}
+with value coefficient $c_v = 0.5$, entropy coefficient $c_e = 0.05$ (higher
+than the typical 0.01 to encourage early exploration of all 12 actions), and
+value function loss $\mathcal{L}_{\text{VF}} = \text{MSE}(V(o_t), R_t)$.
+
+\subsubsection{Learning Rate Schedule}
+The learning rate decays linearly from $3\times10^{-4}$ to $3\times10^{-5}$
+over the training run:
+\begin{equation}
+  \eta_t = 3\times10^{-4} \cdot \max\!\left(0.1,\ 1 - \frac{t}{T_{\max}}\right),
+  \label{eq:lr_schedule}
+\end{equation}
+where $T_{\max}$ is the maximum episode count (\icode{max\_episodes\_extended}).
+This schedule prevents over-fitting to early-episode dynamics and ensures
+convergence at long horizons.
+
+\subsection{Experimental Configurations}
+\label{sec:configs}
+
+Table~\ref{tab:configs} summarizes the 11 experimental configurations.
+Each configuration specifies the adversarial population size, the subset of
+enabled attack-class actions, and the adversarial reward bonus.  Configurations
+C1--C5 establish baseline and mixed-population scenarios; C6--C10 isolate
+individual attack vectors; C11 enables all 9 attack types simultaneously
+with a colluding subgroup and Sybil capability.
+
+\begin{table}[!t]
+\centering
+\caption{Experimental configurations.  $N_{\text{adv}}$ = adversarial agents
+(out of 20). $b$ = adversarial reward bonus. ``Enabled'' = attack-class
+actions enabled (all configs also permit actions 0--6).}
+\label{tab:configs}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}C{0.5cm}L{2.4cm}C{0.8cm}C{0.6cm}L{2.5cm}@{}}
+\toprule
+\textbf{C\#} & \textbf{Name} & $N_{\text{adv}}$ & $b$ & \textbf{Enabled Attacks} \\
+\midrule
+1  & Baseline (all honest)   & 0  & 0.0 & None \\
+2  & Mixed population        & 5  & 0.5 & None (A3--A6) \\
+3  & Sybil                   & 5  & 0.5 & A5 \\
+4  & Collusion ring          & 5  & 0.5 & A3,A4 (group) \\
+5  & Adaptive (2$\times$)    & 10 & 2.0 & A3--A6 \\
+6  & Self-rating             & 5  & 1.0 & A7 \\
+7  & Admin escalation        & 3  & 1.0 & A8 \\
+8  & Evidence tampering      & 5  & 1.0 & A9 \\
+9  & Gate bypass             & 4  & 1.0 & A10 \\
+10 & Provenance replay       & 3  & 1.0 & A11 \\
+11 & Comprehensive           & 10 & 1.0 & A7--A11 + A3--A6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Training Protocol}
+
+Each configuration is trained with $S = 5$ independent random seeds (seeds
+0--4).  Each seed runs for up to $T_{\max} = 10{,}000$ episodes, with early
+stopping if the reward variance over the last 100 episodes falls below
+$\sigma^2 = 0.05$.  Evaluation metrics are computed as the mean over the
+final 20\% of training episodes (episodes 8{,}000--10{,}000), avoiding
+contamination from early random-policy behavior.  All training runs use
+\texttt{torch.set\_num\_threads(1)} with \icode{OMP\_NUM\_THREADS=1} and
+\icode{MKL\_NUM\_THREADS=1} to prevent CPU thread contention during parallel
+runs.  Wall-clock budget is 8 hours per seed.
+
+The primary metrics are:
+\begin{itemize}[noitemsep]
+  \item \textbf{Honest \%}: Fraction of rating actions (A1--A4) in which the
+        agent chose an honest action (A1 or A2).
+  \item \textbf{Defense block rate}: $\text{blocked} / \text{attempted}$
+        for all attack-class actions (A5--A11) in the tail.
+  \item \textbf{Reputation accuracy}: Mean absolute error between agent score
+        $\mu_i$ and true latent quality $q_i \sim \mathcal{U}[0,1]$.
+\end{itemize}
