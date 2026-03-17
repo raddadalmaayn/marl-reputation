@@ -1,0 +1,10 @@
+{
+  "config": "sweep_bonus_0p1",
+  "n_seeds": 3,
+  "converged_count": 1,
+  "mean_honest_pct": 0.9991895424836601,
+  "std_honest_pct": 0.001146160011334999,
+  "mean_eval_reward": -0.00397167131728135,
+  "std_eval_reward": 0.03195370459859875,
+  "mean_eval_accuracy": 0.43413615993056814
+}

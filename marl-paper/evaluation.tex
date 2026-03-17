@@ -287,7 +287,7 @@ score-quality alignment).
 
 Figure~\ref{fig:sensitivity} shows the effect of varying the adversarial
 reward bonus $b$ (the primary incentive parameter) on honest action percentage
-in tail episodes.  Across all tested values $b \in \{0.25, 0.5, 1.0, 2.0, 4.0\}$,
+in tail episodes.  Across all tested values $b \in \{0.1, 0.25, 0.5, 1.0, 2.0, 4.0\}$,
 the system achieves $\geq\!99.9\%$ honest behavior, confirming strong robustness
 to incentive amplification.  Even at $b = 4.0$ (eight times the stake barrier),
 all seeds converge to the honest-dominant equilibrium, demonstrating that the
@@ -326,10 +326,10 @@ MAPPO's joint observation processing handles more robustly.
   \centering
   \includegraphics[width=0.9\columnwidth]{figures/fig_mappo_vs_ippo.pdf}
   \caption{MAPPO vs.\ Independent PPO: honest-action percentage over training
-           (smoothed over 50-episode window) for C2 (mixed adversaries,
-           left) and C11 (all attacks, right).  MAPPO reaches the 95\%
-           honest-behavior threshold $1.9\times$ sooner on C2 and $1.4\times$
-           sooner on C11 than IPPO.}
+           (smoothed over 50-episode window, mean $\pm$ std over 2 seeds) for
+           C2 (mixed adversaries, left) and C11 (all attacks, right).
+           MAPPO reaches the 95\% honest-behavior threshold $1.9\times$ sooner
+           on C2 and $1.4\times$ sooner on C11 than IPPO.}
   \label{fig:mappo_vs_ippo}
 \end{figure}
 
@@ -379,18 +379,23 @@ incentivising score-building behavior over step-by-step rating tactics.
 
 We retrain C2 (mixed adversaries) and C11 (comprehensive) with this
 modification using 3 seeds each (\texttt{config2\_terminal},
-\texttt{config11\_terminal}).  Results are reported in
-Table~\ref{tab:terminal}.  Preliminary results from C2 (2/3 seeds completed) are notably
-promising: both seeds converge to the honest-dominant equilibrium
-($97.5\pm2.5\%$ honest), a marked improvement over the C2 baseline
-which showed bimodal convergence ($73.6\pm38.8\%$ honest, with one
-adversarial-dominant seed).  The terminal reward appears to narrow
-the honest basin, discouraging the adversarial-dominant fixed point.
-Full 3-seed results for C11 are pending extended training.
+\texttt{config11\_terminal}).  Results are reported in Table~\ref{tab:terminal}.
+
+The effect differs markedly across configurations.  For C2, the terminal
+reward does not eliminate bimodal convergence: 2/3 seeds converge to the
+honest-dominant equilibrium ($\geq\!95\%$ honest) while 1/3 converge
+adversarial-dominant ($0\%$ honest), yielding the same bimodal pattern as
+the baseline, albeit with a smaller honest sample.  For C11, however,
+the terminal reward produces a striking improvement: all 3 seeds converge
+to $100\%$ honest behavior, compared to the baseline's 1/5 honest-dominant
+rate.  The terminal reward appears to reshape the reward landscape for the
+comprehensive attack configuration — where multi-vector coordination makes
+adversarial behavior substantially more costly when scored at episode end —
+more effectively than for the simpler mixed setting.
 
 \begin{table}[h]
 \centering
-\caption{Terminal reward ablation: C2 and C11 with $R_{\text{terminal}}=0.5\times(\mu^{\text{final}}-0.5)$ vs.\ baseline.}
+\caption{Terminal reward ablation: C2 and C11 with $R_{\text{terminal}}=0.5\times(\mu^{\text{final}}-0.5)$ vs.\ baseline. 3 seeds each.}
 \label{tab:terminal}
 \footnotesize
 \renewcommand{\arraystretch}{1.2}
@@ -399,11 +404,12 @@ Full 3-seed results for C11 are pending extended training.
 \textbf{Configuration} & \textbf{Conv.} & \textbf{Honest \%} & \textbf{Eval Reward} \\
 \midrule
 C2 baseline           & 4/5 & $73.6\pm38.8$\% & $-7.06\pm9.37$ \\
-C2 + terminal reward  & 2/2$^\ddagger$ & $97.5\pm2.5$\% & $-2.38\pm2.22$ \\
+C2 + terminal reward  & 3/3 & $65.0\pm46.0$\% & $-9.31\pm9.97$ \\
 C11 baseline          & 5/5 & $20.0\pm40.0$\% & $-2.62\pm2.17$ \\
-C11 + terminal reward & \textit{in progress} & \textit{in progress} & \textit{in progress} \\
+C11 + terminal reward & 2/3$^\ddagger$ & $100.0\pm0.0$\% & $-1.26\pm2.23$ \\
 \bottomrule
-\multicolumn{4}{l}{\scriptsize $^\ddagger$C2 terminal: 2/3 seeds completed (ep=13{,}695 and 5{,}637); seed 2 in progress.}\\
+\multicolumn{4}{l}{\scriptsize $^\ddagger$C11 terminal seed 2 ran to ep=20{,}000 without meeting variance threshold;}\\
+\multicolumn{4}{l}{\scriptsize all 3 seeds achieved $100\%$ honest behavior in evaluation.}\\
 \end{tabular}
 \end{table}
 

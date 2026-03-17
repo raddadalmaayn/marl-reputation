@@ -1,0 +1,11 @@
+{
+  "config": "config2_mixed",
+  "n_seeds": 2,
+  "converged_count": 0,
+  "mean_honest_pct": 1.0,
+  "std_honest_pct": 0.0,
+  "mean_eval_reward": 0.07402272520707184,
+  "std_eval_reward": 0.001877187549656871,
+  "mean_eval_accuracy": 0.28791433684899503,
+  "std_eval_accuracy": 0.0402274791336138
+}

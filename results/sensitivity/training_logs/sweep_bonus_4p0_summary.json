@@ -1,12 +1,11 @@
 {
   "config": "sweep_bonus_4p0",
-  "description": "partial (2 seeds)",
-  "n_seeds": 2,
+  "n_seeds": 3,
   "converged_count": 2,
-  "mean_eval_reward": -0.01353241320590437,
-  "std_eval_reward": 0.5369689508155978,
-  "mean_eval_accuracy": 0.3774119097582064,
-  "std_eval_accuracy": 0.0940284908707083,
   "mean_honest_pct": 1.0,
-  "std_honest_pct": 0.0
+  "std_honest_pct": 0.0,
+  "mean_eval_reward": 0.18543057335436877,
+  "std_eval_reward": 0.5209571090489467,
+  "mean_eval_accuracy": 0.3440240782138069,
+  "std_eval_accuracy": 0.09013175164219117
 }

@@ -1,0 +1,11 @@
+{
+  "config": "config2_terminal",
+  "n_seeds": 3,
+  "converged_count": 3,
+  "mean_honest_pct": 0.6501641122538643,
+  "std_honest_pct": 0.4601795170198789,
+  "mean_eval_reward": -9.30826951751598,
+  "std_eval_reward": 9.965544305453557,
+  "mean_eval_accuracy": 0.3707077570928064,
+  "std_eval_accuracy": 0.1996769961501269
+}
