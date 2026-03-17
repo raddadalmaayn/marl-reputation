@@ -287,12 +287,13 @@ score-quality alignment).
 
 Figure~\ref{fig:sensitivity} shows the effect of varying the adversarial
 reward bonus $b$ (the primary incentive parameter) on honest action percentage
-in tail episodes.  The system maintains $>95\%$ honest behavior for $b \leq 1.0$
-(up to $2\times$ the baseline), confirming robustness to moderate incentive
-amplification.  At $b = 2.0$ honest behavior begins to degrade for some seeds,
-and at $b = 4.0$ convergence fails in the majority of seeds — consistent with
-the theoretical expectation that sufficiently strong adversarial incentives
-can overcome any fixed penalty structure.
+in tail episodes.  Across all tested values $b \in \{0.25, 0.5, 2.0, 4.0\}$,
+the system achieves $\geq\!99.9\%$ honest behavior, confirming strong robustness
+to incentive amplification.  Even at $b = 4.0$ (eight times the stake barrier),
+all seeds converge to the honest-dominant equilibrium, demonstrating that the
+combined stake barrier, Wilson-CI weighting, and temporal decay create a
+sufficiently deep honest basin that adversarial incentives within this range
+cannot overcome it.
 
 \begin{figure}[!t]
   \centering
@@ -312,20 +313,23 @@ can overcome any fixed penalty structure.
 We compare MAPPO (shared policy) against Independent PPO (per-agent policy,
 no parameter sharing) on C2 and C11.  Figure~\ref{fig:mappo_vs_ippo} shows
 the training curves.  MAPPO consistently reaches the 95\% honest-behavior
-threshold faster than IPPO on both configurations, reflecting the benefit of
-shared policy learning: honest agents can collectively learn the optimal
-deterrence response more efficiently when they share gradient updates.  On C11,
-the performance gap is larger due to the coordinated multi-vector nature of
-the adversarial population, which MAPPO's joint observation processing handles
-more robustly.
+threshold faster than IPPO on both configurations: on C2, MAPPO first
+sustains $\geq\!95\%$ honest at episode~24 vs.\ episode~47 for IPPO;
+on C11, MAPPO reaches the threshold at episode~93 vs.\ episode~127 for IPPO.
+This reflects the benefit of shared policy learning: honest agents can
+collectively learn the optimal deterrence response more efficiently when they
+share gradient updates.  On C11, the performance gap is larger due to the
+coordinated multi-vector nature of the adversarial population, which
+MAPPO's joint observation processing handles more robustly.
 
 \begin{figure}[!t]
   \centering
   \includegraphics[width=0.9\columnwidth]{figures/fig_mappo_vs_ippo.pdf}
   \caption{MAPPO vs.\ Independent PPO: honest-action percentage over training
-           (smoothed, mean $\pm$ std across seeds) for C2 (mixed adversaries,
-           left) and C11 (all attacks, right).  MAPPO converges faster and to
-           a higher equilibrium on both configurations.}
+           (smoothed over 50-episode window) for C2 (mixed adversaries,
+           left) and C11 (all attacks, right).  MAPPO reaches the 95\%
+           honest-behavior threshold $1.9\times$ sooner on C2 and $1.4\times$
+           sooner on C11 than IPPO.}
   \label{fig:mappo_vs_ippo}
 \end{figure}
 
@@ -376,7 +380,13 @@ incentivising score-building behavior over step-by-step rating tactics.
 We retrain C2 (mixed adversaries) and C11 (comprehensive) with this
 modification using 3 seeds each (\texttt{config2\_terminal},
 \texttt{config11\_terminal}).  Results are reported in
-Table~\ref{tab:terminal}.
+Table~\ref{tab:terminal}.  Preliminary results from C2 (2/3 seeds completed) are notably
+promising: both seeds converge to the honest-dominant equilibrium
+($97.5\pm2.5\%$ honest), a marked improvement over the C2 baseline
+which showed bimodal convergence ($73.6\pm38.8\%$ honest, with one
+adversarial-dominant seed).  The terminal reward appears to narrow
+the honest basin, discouraging the adversarial-dominant fixed point.
+Full 3-seed results for C11 are pending extended training.
 
 \begin{table}[h]
 \centering
@@ -389,10 +399,11 @@ Table~\ref{tab:terminal}.
 \textbf{Configuration} & \textbf{Conv.} & \textbf{Honest \%} & \textbf{Eval Reward} \\
 \midrule
 C2 baseline           & 4/5 & $73.6\pm38.8$\% & $-7.06\pm9.37$ \\
-C2 + terminal reward  & \textit{pending} & \textit{pending} & \textit{pending} \\
+C2 + terminal reward  & 2/2$^\ddagger$ & $97.5\pm2.5$\% & $-2.38\pm2.22$ \\
 C11 baseline          & 5/5 & $20.0\pm40.0$\% & $-2.62\pm2.17$ \\
-C11 + terminal reward & \textit{pending} & \textit{pending} & \textit{pending} \\
+C11 + terminal reward & \textit{in progress} & \textit{in progress} & \textit{in progress} \\
 \bottomrule
+\multicolumn{4}{l}{\scriptsize $^\ddagger$C2 terminal: 2/3 seeds completed (ep=13{,}695 and 5{,}637); seed 2 in progress.}\\
 \end{tabular}
 \end{table}
 
