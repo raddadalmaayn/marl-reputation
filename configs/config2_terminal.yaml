@@ -1,0 +1,16 @@
+name: config2_terminal
+description: "Mixed adversaries (5/20) with terminal reputation-progress reward R_term=0.5*(final_score-initial_score)"
+n_agents: 20
+max_steps: 100
+episodes: 5000
+eval_episodes: 20
+seeds: 3
+adversarial_ids: [0, 1, 2, 3, 4]
+adversarial_reward_bonus: 1.0
+collusion_groups: []
+max_sybils_per_agent: 0
+checkpoint_every: 250
+convergence_reward_variance_threshold: 0.05
+convergence_window: 100
+max_episodes_extended: 20000
+terminal_reward_coef: 0.5

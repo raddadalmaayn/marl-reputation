@@ -1,0 +1,16 @@
+{
+  "config": "sweep_bonus_0p0",
+  "description": "Sensitivity sweep: adversarial_reward_bonus=0.0",
+  "n_seeds": 2,
+  "converged_count": 0,
+  "mean_eval_reward": -1.4300807813007128,
+  "std_eval_reward": 0.7124999999999986,
+  "mean_eval_accuracy": 0.3045696422625779,
+  "std_eval_accuracy": 0.057475026325568,
+  "mean_honest_pct": 0.9995326358826144,
+  "std_honest_pct": 6.455836443708396e-06,
+  "total_training_time_s": 6161.2900104522705,
+  "mean_defense_rate": 0.5362658510305762,
+  "total_attacks_blocked": 7106,
+  "total_attacks_attempted": 13250
+}

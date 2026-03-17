@@ -1,0 +1,16 @@
+{
+  "config": "ablation_no_dispute",
+  "description": "Ablation: no dispute resolution \u2014 dispute_cost set extremely high so no disputes are filed",
+  "n_seeds": 3,
+  "converged_count": 0,
+  "mean_eval_reward": -1.1499385247562248,
+  "std_eval_reward": 0.11515544723830085,
+  "mean_eval_accuracy": 0.30610430423333446,
+  "std_eval_accuracy": 0.0801381473590387,
+  "mean_honest_pct": 0.9979366991062025,
+  "std_honest_pct": 0.0013263875772015375,
+  "total_training_time_s": 14927.002616882324,
+  "mean_defense_rate": 0.4338355960540852,
+  "total_attacks_blocked": 15081,
+  "total_attacks_attempted": 35524
+}

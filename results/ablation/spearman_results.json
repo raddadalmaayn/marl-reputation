@@ -1,0 +1,26 @@
+{
+  "full_system": {
+    "mean_rho": -0.36609022556390974,
+    "std_rho": 0.6750493142623553
+  },
+  "ablation_no_stake": {
+    "mean_rho": 0.5727318295739348,
+    "std_rho": 0.326737016817894,
+    "n_episodes": 60
+  },
+  "ablation_no_wilson": {
+    "mean_rho": -0.30208020050125306,
+    "std_rho": 0.842752082938558,
+    "n_episodes": 60
+  },
+  "ablation_no_decay": {
+    "mean_rho": 0.6525814536340852,
+    "std_rho": 0.33620844967430813,
+    "n_episodes": 60
+  },
+  "ablation_no_dispute": {
+    "mean_rho": 0.5727318295739348,
+    "std_rho": 0.326737016817894,
+    "n_episodes": 60
+  }
+}

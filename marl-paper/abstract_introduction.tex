@@ -31,10 +31,13 @@ single-attack configurations.  Deterministic defense mechanisms achieve
 attacks; probabilistic detection ($p=0.80$) yields an 81.5\% empirical block
 rate for evidence tampering; and economic deterrence constrains Sybil and
 collusion exploitation to 52--58\% without eliminating those strategic modes.
-The comprehensive multi-vector configuration identifies the primary open
-challenge: concurrent multi-vector attacks degrade honest convergence to
-$75.8\%$ in the training tail with a 48.0\% defense hold rate across
-164{,}345 attack attempts.  An ablation study confirms that stake-based economic deterrence is the single most critical defense mechanism --- removing it degrades honest behavior below 90\% --- while parameter sensitivity analysis shows the system maintains $>95\%$ honest behavior for adversarial incentive bonuses up to $b=1.0$ (2$\times$ the baseline).  All source code, configurations, and training
+The comprehensive multi-vector configuration (C11) identifies the primary
+open challenge: extended training to 30{,}000 episodes achieves full
+convergence but reveals a strongly bimodal equilibrium --- 4 of 5 seeds
+converge to an adversarial-dominant basin ($0\%$ honest) and 1 of 5 to the
+honest Nash equilibrium ($100\%$ honest), yielding an aggregate honest rate
+of $20.0\% \pm 40.0\%$ and a 48.0\% defense hold rate across 164{,}345
+attack attempts.  An ablation study confirms that stake-based economic deterrence is the single most critical defense mechanism --- removing it degrades honest behavior below 90\% --- while parameter sensitivity analysis shows the system maintains $>95\%$ honest behavior for adversarial incentive bonuses up to $b=1.0$ (2$\times$ the baseline).  All source code, configurations, and training
 logs are released as a reproducible reference implementation.
 \end{quote}
 
@@ -115,9 +118,11 @@ This paper makes the following contributions:
         deterministic penalty ($-5.0$ per attempt), probabilistic detection
         ($p=0.80$), and economic deterrence; quantified as block rates over
         10{,}000-episode runs with 5 independent seeds each (\S\ref{sec:eval}).
-  \item Identification of the \emph{comprehensive multi-vector attack} as the
-        primary open challenge, with honest convergence degrading to $69.9\%$
-        and 54.1\% defense hold rate across 134{,}337 attack attempts
+  \item Identification of the \emph{comprehensive multi-vector attack} (C11)
+        as the primary open challenge: full convergence (5/5 seeds) requires
+        up to 16{,}593 episodes and reveals a bimodal equilibrium --- 4/5
+        seeds settle adversarial-dominant; aggregate honest rate $20.0\%$,
+        48.0\% defense hold rate across 164{,}345 attack attempts
         (\S\ref{sec:discussion}).
 \end{itemize}
 

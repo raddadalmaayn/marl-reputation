@@ -1,0 +1,16 @@
+{
+  "config": "ablation_no_decay",
+  "description": "Ablation: no temporal decay \u2014 decay_rate=1.0 means no decay applied",
+  "n_seeds": 3,
+  "converged_count": 1,
+  "mean_eval_reward": -1.3155149095368504,
+  "std_eval_reward": 0.41451284044023684,
+  "mean_eval_accuracy": 0.3056142655736508,
+  "std_eval_accuracy": 0.08689842773824097,
+  "mean_honest_pct": 0.9994425519518696,
+  "std_honest_pct": 0.00010930902846629117,
+  "total_training_time_s": 14009.588010787964,
+  "mean_defense_rate": 0.5267081224364786,
+  "total_attacks_blocked": 17134,
+  "total_attacks_attempted": 32537
+}

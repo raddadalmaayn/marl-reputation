@@ -94,6 +94,7 @@ def train_config(cfg: dict, seed: int, output_dir: Path) -> dict:
         max_sybils_per_agent=cfg.get("max_sybils_per_agent", 0),
         enabled_attacks=cfg.get("enabled_attacks", None),
         seed=seed,
+        terminal_reward_coef=cfg.get("terminal_reward_coef", 0.0),
     )
 
     trainer = MAPPOTrainer(obs_dim=14, act_dim=12)
@@ -117,7 +118,7 @@ def train_config(cfg: dict, seed: int, output_dir: Path) -> dict:
     start_time = time.time()
 
     # Wall-clock budget: 8 hours per config per seed (unattended overnight runs)
-    wall_budget = 8 * 3600
+    wall_budget = 10 * 3600
 
     ep = 0
     hard_limit = max_ep_ext

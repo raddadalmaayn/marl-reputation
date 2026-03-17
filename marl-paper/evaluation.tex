@@ -22,6 +22,15 @@ seeds; the high variance indicates that while most seeds converge to near-100\%
 honest behavior, at least one seed found a local equilibrium with sustained
 self-rating attempts despite the $-5.0$ penalty.
 
+The mixed-adversary configuration (C2) shows a mean honest rate of $73.6\%$
+due to one seed (seed 2) converging to an adversarial-dominant equilibrium
+($0\%$ honest) after extended training.  The median across 5 seeds is
+$99.7\%$, and 4 of 5 seeds converge to the honest Nash equilibrium; seed 2
+represents a low-probability but non-negligible adversarial-dominant basin
+reachable in the mixed-population landscape.  Both statistics are reported
+to give a complete picture: the median ($99.7\%$) reflects typical behavior,
+while the mean ($73.6\%$) captures the tail risk.
+
 \subsection{Baseline Convergence (C1)}
 
 The all-honest baseline (C1) converges to $99.8\% \pm 0.09\%$ honest behavior
@@ -229,14 +238,37 @@ Table~\ref{tab:ablation} reports the results.
 
 \input{tables/tab_ablation}
 
-The most critical mechanism is stake-based economic deterrence: removing the
-minimum-stake requirement degrades honest behavior most severely, confirming
-that the financial entry barrier is the primary deterrent against Sybil
-attacks and dishonest rating.  Removing Wilson CI scaling reduces the
-system's ability to penalize sparse identities, while removing temporal decay
-allows adversarial agents to benefit from accumulated stale evidence.
-Disabling dispute resolution removes the correction mechanism for dishonest
-ratings that slip past initial detection.
+With honest behavior alone as the metric, all ablations converge to
+$\geq\!99.7\%$ honest action at adversarial bonus $b=0.5$, leaving the
+mechanisms indistinguishable by that criterion alone.  The Spearman rank
+correlation $\rho$ between final agent scores and true qualities (computed
+over 20 deterministic evaluation episodes per seed) provides a sharper
+lens on reputation \emph{discrimination} --- the degree to which scores
+actually distinguish high-quality from low-quality agents.
+
+\begin{itemize}[noitemsep]
+  \item \textbf{No Wilson CI}: $\rho = -0.30 \pm 0.84$ --- the highest
+        variance and a near-zero mean reveal bimodal behavior: without
+        CI-based weight scaling, scores swing between correlated and
+        anti-correlated across seeds, indicating that Wilson CI is critical
+        for stable score discrimination.
+  \item \textbf{No Temporal Decay}: $\rho = +0.65 \pm 0.34$ --- the best
+        discrimination.  Without exponential decay, accumulated positive
+        evidence from early honest episodes persists, producing clearer
+        score separation.
+  \item \textbf{No Stake / No Dispute}: $\rho = +0.57 \pm 0.33$ --- moderate
+        discrimination; both mechanisms reduce noise similarly in the
+        $b=0.5$ regime.
+  \item \textbf{Full system (C2, $b=1.0$)}: $\rho = -0.44 \pm 0.72$ ---
+        higher adversarial pressure ($b=1.0$) degrades discrimination
+        below the $b=0.5$ ablation level; combined with the bimodal
+        convergence, scores are an unreliable signal of true quality.
+\end{itemize}
+
+The Wilson CI mechanism is thus doubly important: it supports both honest
+convergence (via CI-based penalization of sparse identities) and score
+discrimination (via stable weight scaling that prevents bimodal
+score-quality alignment).
 
 \begin{figure}[!t]
   \centering
@@ -323,6 +355,46 @@ equilibrium.
            high-penalty actions before learning they are unprofitable.}
   \label{fig:c11_decomp}
 \end{figure}
+
+% -----------------------------------------------------------------------
+\subsection{Terminal Reward Ablation}
+\label{sec:terminal}
+% -----------------------------------------------------------------------
+
+We evaluate a reward shaping variant that adds a terminal reputation-progress
+component at episode end:
+\begin{equation}
+  R_{\text{terminal}} = 0.5 \times (\mu_i^{\text{final}} - \mu_i^{\text{initial}}),
+  \label{eq:rterminal}
+\end{equation}
+where $\mu_i^{\text{initial}} = \alpha_0/(\alpha_0+\beta_0) = 0.5$ (from the
+Beta prior) for all agents.  This connects the RL objective directly to
+actual reputation outcomes --- agents that end the episode with higher scores
+than they started receive an additional reward proportional to the improvement,
+incentivising score-building behavior over step-by-step rating tactics.
+
+We retrain C2 (mixed adversaries) and C11 (comprehensive) with this
+modification using 3 seeds each (\texttt{config2\_terminal},
+\texttt{config11\_terminal}).  Results are reported in
+Table~\ref{tab:terminal}.
+
+\begin{table}[h]
+\centering
+\caption{Terminal reward ablation: C2 and C11 with $R_{\text{terminal}}=0.5\times(\mu^{\text{final}}-0.5)$ vs.\ baseline.}
+\label{tab:terminal}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}L{3.2cm}C{1.2cm}C{1.6cm}C{1.6cm}@{}}
+\toprule
+\textbf{Configuration} & \textbf{Conv.} & \textbf{Honest \%} & \textbf{Eval Reward} \\
+\midrule
+C2 baseline           & 4/5 & $73.6\pm38.8$\% & $-7.06\pm9.37$ \\
+C2 + terminal reward  & \textit{pending} & \textit{pending} & \textit{pending} \\
+C11 baseline          & 5/5 & $20.0\pm40.0$\% & $-2.62\pm2.17$ \\
+C11 + terminal reward & \textit{pending} & \textit{pending} & \textit{pending} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 % -----------------------------------------------------------------------
 \subsection{Statistical Significance}

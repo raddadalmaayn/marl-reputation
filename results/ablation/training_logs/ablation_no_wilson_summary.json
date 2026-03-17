@@ -1,0 +1,16 @@
+{
+  "config": "ablation_no_wilson",
+  "description": "Ablation: no Wilson CI \u2014 simulated by setting max_rater_weight=1.0 min_rater_weight=1.0 (flat weights, CI widening disabled)",
+  "n_seeds": 3,
+  "converged_count": 0,
+  "mean_eval_reward": -1.325262515211726,
+  "std_eval_reward": 0.10700806597953523,
+  "mean_eval_accuracy": 0.31007234105989573,
+  "std_eval_accuracy": 0.23390050608757187,
+  "mean_honest_pct": 0.9980359109357494,
+  "std_honest_pct": 0.0019067488830504743,
+  "total_training_time_s": 15146.744204998016,
+  "mean_defense_rate": 0.5270729235947041,
+  "total_attacks_blocked": 17154,
+  "total_attacks_attempted": 32577
+}
