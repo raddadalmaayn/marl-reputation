@@ -1,23 +1,23 @@
 \begin{table}[t]
 \centering
 \caption{Ablation study: effect of removing each defense mechanism (3 seeds, $b=0.5$).
-Honest~\% and MAE from training evaluation; Spearman $\rho$ = rank correlation between
+Honest~\% from training evaluation; Spearman $\rho$ = rank correlation between
 final agent scores and true qualities (20 det.\ episodes per seed).
 Full system (C2, $b=1.0$) shown for reference; ablation runs use $b=0.5$ to isolate mechanism effects.}
 \label{tab:ablation}
 \footnotesize
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{@{}L{2.5cm}C{1.1cm}C{1.0cm}C{1.2cm}L{2.5cm}@{}}
+\begin{tabular}{@{}L{2.5cm}C{1.2cm}C{1.4cm}L{3.2cm}@{}}
 \toprule
-\textbf{Configuration} & \textbf{Honest \%} & \textbf{MAE} & \textbf{Spearman $\rho$} & \textbf{Key Effect} \\
+\textbf{Configuration} & \textbf{Honest \%} & \textbf{Spearman $\rho$} & \textbf{Key Effect} \\
 \midrule
-Full System (C2)$^\dagger$ & 73.6 & 0.382 & $-0.44\pm0.72$ & Bimodal; adv.\ pressure degrades discrimination \\
-No Stake Barrier     & 99.8 & 0.306 & $+0.57\pm0.33$ & Stake removal lifts discrimination; fewer slashings \\
-No Wilson CI         & 99.8 & 0.310 & $-0.30\pm0.84$ & Flat weights cause bimodal score–quality alignment \\
-No Temporal Decay    & 99.9 & 0.306 & $+0.65\pm0.34$ & Best discrimination: stale evidence boosts signal \\
-No Dispute Resol.    & 99.8 & 0.306 & $+0.57\pm0.33$ & Similar to No Stake; disputes rarely alter scores \\
+Full System (C2)$^\dagger$ & 73.6 & $-0.44\pm0.72$ & Bimodal; adv.\ pressure degrades discrimination \\
+No Stake Barrier     & 99.8 & $+0.57\pm0.33$ & Stake removal lifts discrimination; fewer slashings \\
+No Wilson CI         & 99.8 & $-0.30\pm0.84$ & Flat weights cause bimodal score–quality alignment \\
+No Temporal Decay    & 99.9 & $+0.65\pm0.34$ & Best discrimination: stale evidence boosts signal \\
+No Dispute Resol.    & 99.8 & $+0.57\pm0.33$ & Similar to No Stake; disputes rarely alter scores \\
 \bottomrule
-\multicolumn{5}{l}{\scriptsize $^\dagger$C2 full system uses $b=1.0$; honest~\% reflects bimodal extended-training outcome (median 99.7\%).}\\
-\multicolumn{5}{l}{\scriptsize Ablation configs use $b=0.5$; all 3/3 seeds converged to honest-dominant equilibrium.}
+\multicolumn{4}{l}{\scriptsize $^\dagger$C2 full system uses $b=1.0$; honest~\% reflects bimodal extended-training outcome (median 99.7\%).}\\
+\multicolumn{4}{l}{\scriptsize Ablation configs use $b=0.5$; all 3/3 seeds converged to honest-dominant equilibrium.}
 \end{tabular}
 \end{table}
