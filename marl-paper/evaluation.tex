@@ -31,6 +31,24 @@ reachable in the mixed-population landscape.  Both statistics are reported
 to give a complete picture: the median ($99.7\%$) reflects typical behavior,
 while the mean ($73.6\%$) captures the tail risk.
 
+To characterize tail risk beyond mean $\pm$ std, Table~\ref{tab:summary}
+rows are supplemented here with per-seed extremes for the three configurations
+exhibiting bimodal convergence.
+For C2 (mixed), the per-seed honest rates are
+$\{68.0\%, 100.0\%, 0.0\%, 100.0\%, \sim\!100\%\}$; seed~0 reaches a
+partial equilibrium ($68\%$) and seed~2 the adversarial-dominant basin,
+while seeds~1, 3, 4 all exceed $99.9\%$ honest.
+For C11 (comprehensive), per-seed rates are
+$\{0.0\%, 0.0\%, 0.0\%, 100.0\%, 0.0\%\}$; only seed~3 reaches the honest
+equilibrium.
+For C6 (self-rating), per-seed rates are
+$\{0.0\%, 0.0\%, 100.0\%, 100.0\%, 0.0\%\}$; seeds~2--3 reach honest
+equilibrium while the remainder converge to rational abstention (A0), which
+is safe but non-functional.
+These per-seed breakdowns confirm that bimodality is a discrete
+basin-of-attraction phenomenon: each seed converges fully to one equilibrium
+or the other, and mean $\pm$ std alone understates the risk of adversarial lock-in.
+
 \subsection{Baseline Convergence (C1)}
 
 The all-honest baseline (C1) converges to $99.8\% \pm 0.09\%$ honest behavior
@@ -109,9 +127,13 @@ meta-reputation weighting rather than deterministic penalties.
         equilibrium; the defense system handles $2\times$ adversarial incentive
         without catastrophic failure.
   \item \textbf{C2 (mixed)}: $51.9\%$ block rate (39{,}951/76{,}938);
-        honest \% = $99.70\% \pm 0.22\%$.  The mixed population scenario
-        without explicit attack-class actions shows the same economic
-        deterrence pattern as C3--C5.
+        honest \% = $73.6\% \pm 38.8\%$ (mean) / $99.7\%$ (median).
+        The divergence reflects one seed (seed~2) converging to an
+        adversarial-dominant equilibrium; the remaining 4 seeds converge
+        to $\geq\!99.7\%$ honest.  The mixed population scenario demonstrates
+        the same economic deterrence pattern as C3--C5 in 4 of 5 seeds,
+        with the fifth seed illustrating the bimodal convergence risk
+        discussed in Section~\ref{sec:discussion}.
 \end{itemize}
 
 \subsubsection{Provenance Replay (C10)}
@@ -237,6 +259,13 @@ configuration and retraining with 3 seeds at up to 5{,}000 episodes.
 Table~\ref{tab:ablation} reports the results.
 
 \input{tables/tab_ablation}
+
+\textbf{Design note:} The ablation configurations use adversarial bonus
+$b = 0.5$ to isolate the effect of each defense mechanism at moderate
+adversarial pressure, while the full C2 system uses $b = 1.0$.  This
+means the ablation honest-\% values are not directly comparable to the
+C2 baseline; the Spearman $\rho$ analysis below provides the
+mechanism-discriminating comparison.
 
 With honest behavior alone as the metric, all ablations converge to
 $\geq\!99.7\%$ honest action at adversarial bonus $b=0.5$, leaving the

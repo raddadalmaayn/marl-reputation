@@ -30,12 +30,35 @@ adversarial-dominant) and the defense system achieves a $48.0\%$ block rate
 across 164{,}345 attack attempts.  Addressing this challenge likely
 requires extending the observation space with cross-agent comparison signals
 and introducing cooperative majority protocols among honest agents.
+A terminal reward variant connecting the RL objective to long-term reputation
+outcomes eliminates the bimodal failure entirely for C11 ($100.0\%$ honest
+across all seeds), identifying outcome-based incentive alignment as the key
+design principle for multi-vector defense.
+
+Several directions extend this work.  \emph{Curriculum learning and
+adversarial annealing} could address bimodal convergence in C11 by gradually
+increasing adversarial population fraction during training, allowing honest
+agents to build robust policies before facing full adversarial pressure.
+\emph{Enriched observation spaces} that include peer behavior distributions,
+network-level reputation entropy, and clustering indicators would enable
+agents to detect coordinated Sybil and collusion patterns currently invisible
+in the 14-dimensional observation.  \emph{Heterogeneous policy architectures}
+that assign separate networks to honest and adversarial agent types would
+more faithfully model the asymmetric capabilities of real supply chain actors,
+addressing the limitation of MAPPO's shared-policy assumption.
+\emph{Population-level coordination mechanisms} --- majority voting signals,
+consensus penalties, or group-level rewards --- could provide honest agents
+with collective defense capabilities against adversarial clusters, directly
+targeting the C11 failure mode.  Finally, \emph{dynamic adversarial
+populations} where agents enter and leave the supply chain during training
+would test robustness under realistic participation dynamics rather than the
+fixed-fraction assumption used here.
 
 This work demonstrates that MARL-based adversarial evaluation is a
 productive complement to scripted attack injection for reputation system
 security analysis.  The two methodologies agree on deterministic defense
 outcomes, while MARL additionally quantifies block rates, reveals honest
 convergence dynamics, and discovers emergent multi-vector challenges that
-static scripting cannot anticipate.  The complete implementation —
-environment, training harness, configurations, and results — is released
+static scripting cannot anticipate.  The complete implementation ---
+environment, training harness, configurations, and results --- is released
 as an open-source reference for the community.

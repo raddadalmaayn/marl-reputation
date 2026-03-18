@@ -48,7 +48,33 @@ negative expected value, regardless of the reward bonus magnitude.  The
 MARL training validates that this theoretical prediction holds empirically
 for all single-attack configurations.
 
+We note an important distinction between \emph{security robustness} and
+\emph{functional utility}.  A population that converges to no-operation
+(A0) rather than honest rating (A1--A2) is safe from a security perspective ---
+no attacks succeed --- but does not achieve the system's intended purpose of
+producing accurate, evidence-grounded reputation scores.  The honest action
+percentage metric captures this distinction: configurations where agents
+converge to honest \emph{rating} (C1, C4, C7--C9: $\geq\!99.5\%$ honest)
+provide both security and utility, while configurations where agents converge
+to abstention provide security without utility.  Designing reward structures
+that incentivize active honest participation --- not merely attack avoidance ---
+is an open challenge that the terminal reward result (Section~\ref{sec:terminal})
+begins to address.
+
 \subsection{Multi-Vector Attack as the Open Challenge}
+
+The C11 result ($20.0\% \pm 40.0\%$ honest, 4/5 seeds adversarial-dominant)
+indicates that the honest Nash equilibrium, while stable once reached, is
+\emph{not globally attracting} at 50\% adversarial fraction.  The system
+possesses two stable attractors --- the honest equilibrium and the adversarial
+equilibrium --- with the basin of attraction depending on early training
+dynamics.  In a real deployment, this translates to \emph{path dependence}:
+an early-stage coordinated attack during system bootstrap could lock the
+network into the adversarial basin before honest participants accumulate
+sufficient evidence mass.  The terminal reward result
+(Section~\ref{sec:terminal}) demonstrates that this path dependence is
+addressable through reward design rather than requiring architectural changes
+to the defense layer.
 
 The comprehensive configuration (C11) reveals a qualitatively different
 challenge.  With $50\%$ adversarial population and coordinated multi-vector
@@ -71,6 +97,37 @@ cross-agent comparison (e.g., including the distribution of stake levels
 across all agents) and introducing a cooperative honest majority protocol
 that enables honest agents to identify and coordinate against adversarial
 clusters.
+
+\subsection{Terminal Reward as a Design Recommendation}
+\label{sec:terminal_design}
+
+The terminal reward variant (Section~\ref{sec:terminal}) produces the most
+striking result in the entire evaluation: C11 honest behavior improves from
+$20.0\%$ to $100.0\%$ across all 3 seeds when a reputation-progress component
+$R_{\text{terminal}} = 0.5 \times (\mu_i^{\text{final}} - 0.5)$ is added at
+episode end.  This result demonstrates that the C11 failure is not a
+fundamental limitation of the defense mechanism design but rather a consequence
+of the reward objective: step-level action rewards do not capture the long-term
+cost of reputation degradation under multi-vector coordination.
+
+The asymmetry between C2 and C11 is instructive.  For C2 (5 adversaries,
+$b = 0.5$), the terminal reward does not eliminate bimodality
+($65.0\% \pm 46.0\%$ honest), because the lower adversarial pressure and
+fewer attack vectors make the per-step reward landscape already navigable ---
+the terminal signal adds insufficient gradient to escape the adversarial basin.
+For C11 (10 adversaries, $b = 1.0$, all 9 attack vectors), the cumulative
+reputation damage from coordinated multi-vector attacks is large enough that
+the terminal penalty creates a steep gradient away from the adversarial
+equilibrium, collapsing the bimodal landscape into a single honest attractor.
+
+This finding has a direct design implication for deployed reputation systems:
+the RL evaluation suggests that \emph{outcome-based incentive alignment} ---
+connecting agent rewards to long-term reputation consequences, not just
+per-action penalties --- is essential for robust defense under coordinated
+multi-vector attacks.  In the blockchain implementation, this translates to
+designing economic mechanisms where an actor's cumulative reputation
+trajectory, not just individual transaction outcomes, determines their
+net economic return.
 
 \subsection{Methodology Comparison with Scripted Evaluation}
 
