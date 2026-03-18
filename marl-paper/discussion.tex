@@ -33,9 +33,15 @@ evidence) to push the equilibrium further toward deterrence.
 block rates.  This is by design: economic mechanisms do not prevent attacks
 but impose costs that limit their profitability.  The honest population
 still converges to $\geq\!87\%$ honest behavior even under Sybil pressure
-(C3: $87.6\%$), confirming that economic deterrence is effective at the
-population level even if individual Sybil actions succeed.  Tightening the
-stake cost or CI widening rate would shift this equilibrium further.
+(C3: $87.6\%$), confirming that economic deterrence reduces attack frequency at the
+population level, though the observed $52$--$58\%$ block rates indicate that
+these mechanisms remain \emph{persistently exploitable} under adaptive
+adversarial strategies.  Economic deterrence imposes costs that shift the
+equilibrium toward honesty but does not eliminate exploitation channels:
+approximately half of all Sybil and collusion attempts succeed, and a
+sufficiently capitalized adversary could sustain this exploitation
+indefinitely.  Tightening the stake cost or CI widening rate would shift
+this equilibrium further.
 
 \subsection{Noop Equilibrium and Rational Abstention}
 
@@ -92,6 +98,14 @@ that no single-attack defense fully handles.  Specifically:
         adversarial reward accumulation from unblocked Sybil and colluding
         actions.
 \end{itemize}
+Fundamentally, the C11 failure arises from the inability of honest agents
+to \emph{coordinate} their responses against adversarial clusters: each
+honest agent optimizes independently based on its own 14-dimensional
+observation, with no mechanism to detect, signal, or collectively respond
+to coordinated multi-vector attacks.  This is not merely a useful
+extension but the \emph{primary structural limitation} of the current
+framework.
+
 Addressing C11 likely requires extending the observation space with
 cross-agent comparison (e.g., including the distribution of stake levels
 across all agents) and introducing a cooperative honest majority protocol
@@ -109,6 +123,13 @@ episode end.  This result demonstrates that the C11 failure is not a
 fundamental limitation of the defense mechanism design but rather a consequence
 of the reward objective: step-level action rewards do not capture the long-term
 cost of reputation degradation under multi-vector coordination.
+More broadly, this exposes a fundamental limitation of step-wise reward
+design in adversarial multi-agent settings: local action-level incentives
+are insufficient to enforce global system-level objectives when adversaries
+can coordinate across multiple attack vectors simultaneously.  The step
+reward treats each action in isolation, but the system's integrity is a
+\emph{trajectory-level} property that emerges from the cumulative
+interaction of all agents' actions over the full episode.
 
 The asymmetry between C2 and C11 is instructive.  For C2 (5 adversaries,
 $b = 0.5$), the terminal reward does not eliminate bimodality
@@ -160,3 +181,27 @@ evaluated under dynamic adversarial populations.
 not include other agents' actions or reputations directly.  Including partial
 observability of peer behavior could improve both honest convergence and
 adversarial detection.
+
+\subsection{Learned Avoidance vs.\ Mechanism Robustness}
+
+An important methodological caveat applies to the interpretation of all
+MARL-based robustness results.  When a trained agent learns to
+\emph{avoid} an attack action due to its associated penalty, the
+observed low attack rate reflects \emph{policy adaptation}, not
+necessarily \emph{intrinsic defense strength}.  Provenance replay (C10)
+illustrates this distinction clearly: the mechanism's block rate is only
+27.1\%, yet trained agents rarely attempt it because the $-5.0$ penalty
+makes every attempt unprofitable regardless of detection.  The defense
+mechanism itself remains weak --- a non-RL adversary (e.g., a scripted
+attacker, a human operator, or an agent trained with a different reward
+structure) could still exploit the 72.9\% evasion rate.
+
+This distinction generalizes across all configurations.  The high honest
+percentages reported in Table~\ref{tab:summary} should be interpreted as
+upper bounds on robustness \emph{against the specific MARL adversary class
+evaluated}, not as guarantees against arbitrary adversarial strategies.
+MARL evaluation complements scripted testing by discovering emergent
+strategies and quantifying convergence dynamics, but it does not replace
+formal verification or red-team exercises with human adversaries.  The
+robustness observed in this evaluation may overestimate security against
+adversaries not constrained by the learned policy class.
