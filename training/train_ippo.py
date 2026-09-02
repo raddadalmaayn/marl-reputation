@@ -114,7 +114,7 @@ def train_config(cfg: dict, seed: int, output_dir: Path) -> dict:
     converged_at = None
     start_time = time.time()
 
-    wall_budget = 8 * 3600
+    wall_budget = 10 * 3600
 
     ep = 0
     hard_limit = max_ep_ext

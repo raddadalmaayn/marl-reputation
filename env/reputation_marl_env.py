@@ -58,6 +58,16 @@ DIMENSIONS              = ["quality"]
 SECONDS_PER_STEP        = 3600.0
 MAX_STEPS               = 50
 
+# Tier 1A — stake-observation semantics.
+# "legacy_normalized": v1 behavior, obs[2] = clip(balance/(4*min_stake), 0, 1).
+#   This is INVARIANT to the stake regime (cancels min_stake) — the bug Tier 0
+#   found. Kept only for exact v1 reproduction.
+# "absolute_log": new default. obs[2] = clip(log1p(balance)/log1p(STAKE_OBS_SCALE),
+#   0, 1) — a bounded, monotone function of ABSOLUTE balance that does NOT cancel
+#   min_stake. STAKE_OBS_SCALE is fixed and independent of min_stake.
+STAKE_OBS_MODES         = ("legacy_normalized", "absolute_log")
+STAKE_OBS_SCALE         = 50_000.0
+
 # Detection probabilities
 DISHONEST_DETECT_PROB   = 0.85   # raised from 0.70
 TAMPER_DETECT_PROB      = 0.80
@@ -103,8 +113,22 @@ class ReputationMARLEnv(AECEnv):
         config: Optional[SystemConfig] = None,
         seed: Optional[int] = None,
         terminal_reward_coef: float = 0.0,  # R_terminal = coef*(final_score - initial_score)
+        stake_obs_mode: str = "absolute_log",   # Tier 1A; see STAKE_OBS_MODES
+        stake_obs_scale: float = STAKE_OBS_SCALE,
+        participation_coef: float = 0.0,  # Tier 1B: per-submitted-rating incentive c
+        reputation_engine: str = "beta",  # Tier 1B Stage 2: "beta" | "flat"
+        record_rating_events: bool = False,  # Tier 1B Stage 2: opt-in event log
     ):
         super().__init__()
+        if stake_obs_mode not in STAKE_OBS_MODES:
+            raise ValueError(
+                f"stake_obs_mode must be one of {STAKE_OBS_MODES}, got {stake_obs_mode!r}")
+        self.stake_obs_mode         = stake_obs_mode
+        self.stake_obs_scale        = float(stake_obs_scale)
+        # Tier 1B participation incentive (Arm B). 0.0 == Arm A (legacy-exact).
+        # Paid on every SUBMITTED rating (actions 1-4 that pass can_rate + dedup),
+        # independent of hidden honesty — only on the observable "a rating happened".
+        self.participation_coef     = float(participation_coef)
         self.n_agents               = n_agents
         self.max_steps              = max_steps
         self.seconds_per_step       = seconds_per_step
@@ -117,7 +141,23 @@ class ReputationMARLEnv(AECEnv):
         self.enabled_attacks        = set(enabled_attacks) if enabled_attacks is not None else {7,8,9,10,11}
         self.terminal_reward_coef   = terminal_reward_coef
         self.config                 = config or SystemConfig()
-        self.engine                 = ReputationEngine(self.config)
+        # Tier 1B Stage 2: pluggable reputation engine. "beta" is the default
+        # (legacy-exact). "flat" is the unweighted-average control (lazy import to
+        # avoid an env->evaluation layering dependency unless the flag is used).
+        self.reputation_engine_name = reputation_engine
+        # Opt-in (default off => no behavior change): log every submitted rating
+        # (rater_idx, target_idx, outcome, weight) so a baseline harness can re-score
+        # the SAME action stream under alternative estimators (Stage 2, apples-to-apples).
+        self.record_rating_events   = bool(record_rating_events)
+        self._rating_events: list   = []
+        if reputation_engine == "beta":
+            self.engine = ReputationEngine(self.config)
+        elif reputation_engine == "flat":
+            from evaluation.baseline_engines import FlatAverageEngine
+            self.engine = FlatAverageEngine(self.config)
+        else:
+            raise ValueError(f"reputation_engine must be 'beta' or 'flat', "
+                             f"got {reputation_engine!r}")
         self._rng                   = np.random.default_rng(seed)
 
         self.possible_agents = [f"agent_{i}" for i in range(n_agents)]
@@ -180,6 +220,7 @@ class ReputationMARLEnv(AECEnv):
         self._step_count = 0
         self._dishonest_ratings = []
         self._duplicate_set = set()
+        self._rating_events = []
         self._attacks_blocked = 0
         self._attacks_attempted = 0
         self._defense_by_type = {a: 0 for a in range(7, 12)}
@@ -354,11 +395,15 @@ class ReputationMARLEnv(AECEnv):
                 target = self._pick_target(agent)
                 if target and self.engine.can_rate(self._stake[agent]):
                     weight = self._calculate_rater_weight(agent) * 0.5  # half weight (low confidence)
+                    tamper_outcome = int(self._rng.random() < 0.5)  # unreliable evidence
                     self._rep[target][DIMENSIONS[0]] = self.engine.apply_rating(
                         self._rep[target][DIMENSIONS[0]],
-                        int(self._rng.random() < 0.5),  # random outcome — unreliable evidence
-                        weight=weight, now=self._sim_time,
+                        tamper_outcome, weight=weight, now=self._sim_time,
                     )
+                    if self.record_rating_events:
+                        self._rating_events.append(
+                            (int(agent.split("_")[1]), int(target.split("_")[1]),
+                             tamper_outcome, float(weight)))
 
         elif action == 10:
             # Attack 7: Reputation gate bypass — ALWAYS BLOCKED
@@ -428,6 +473,14 @@ class ReputationMARLEnv(AECEnv):
             self._rep[target][dim], outcome, weight=weight, now=self._sim_time
         )
         self._ratings_submitted[agent] += 1
+        if self.record_rating_events:
+            self._rating_events.append(
+                (int(agent.split("_")[1]), int(target.split("_")[1]),
+                 int(outcome), float(weight)))
+
+        # Tier 1B: participation incentive — paid for the OBSERVABLE act of
+        # submitting a rating, regardless of (hidden) honesty. Arm A: coef=0.0.
+        base = self.participation_coef
 
         if is_dishonest:
             self._dishonest_ratings.append({
@@ -440,9 +493,9 @@ class ReputationMARLEnv(AECEnv):
                 self._disputes_received[agent] += 1
                 self._disputes_lost[agent] += 1
                 self._pay_defense_dividend()
-                return R_DISHONEST_CAUGHT
+                return R_DISHONEST_CAUGHT + base
 
-        return 0.0
+        return base
 
     def _execute_create_sybil(self, agent: str) -> float:
         if (self.max_sybils_per_agent > 0 and
@@ -506,6 +559,16 @@ class ReputationMARLEnv(AECEnv):
     # Observation
     # ------------------------------------------------------------------
 
+    def _stake_obs(self, balance: float) -> float:
+        """Stake slot (obs[2]) under the configured stake_obs_mode. Stays in [0,1]."""
+        if self.stake_obs_mode == "legacy_normalized":
+            # v1: invariant to min_stake (the Tier 0 bug). Kept for reproduction.
+            max_stake = self.config.min_stake_required * 4.0
+            return float(np.clip(balance / max_stake, 0.0, 1.0))
+        # "absolute_log": monotone in ABSOLUTE balance, independent of min_stake.
+        denom = np.log1p(self.stake_obs_scale)
+        return float(np.clip(np.log1p(max(0.0, balance)) / denom, 0.0, 1.0))
+
     def _observe(self, agent: str) -> np.ndarray:
         dim = DIMENSIONS[0]
         rep = self._rep[agent][dim]
@@ -516,7 +579,6 @@ class ReputationMARLEnv(AECEnv):
         t_rep = self._rep[target][dim]
         _, _, t_width = self.engine.wilson_ci(t_rep.alpha, t_rep.beta)
 
-        max_stake = self.config.min_stake_required * 4.0
         max_attacks = max(1, self.max_steps * self.n_agents)
 
         gate_eligible = 1.0 if (rep.score > 0.7 and width < 0.5) else 0.0
@@ -524,7 +586,7 @@ class ReputationMARLEnv(AECEnv):
         obs = np.array([
             float(rep.score),                                               # 0
             float(width),                                                   # 1
-            float(np.clip(self._stake[agent].balance / max_stake, 0, 1)),  # 2
+            float(self._stake_obs(self._stake[agent].balance)),            # 2
             float(np.clip(rep.alpha / 20.0, 0, 1)),                        # 3
             float(np.clip(rep.beta  / 20.0, 0, 1)),                        # 4
             float(t_rep.score),                                             # 5

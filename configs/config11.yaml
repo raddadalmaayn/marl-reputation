@@ -13,4 +13,4 @@ enabled_attacks: [7, 8, 9, 10, 11]
 checkpoint_every: 250
 convergence_reward_variance_threshold: 0.05
 convergence_window: 100
-max_episodes_extended: 10000
+max_episodes_extended: 20000

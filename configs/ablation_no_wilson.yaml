@@ -12,7 +12,7 @@ max_sybils_per_agent: 0
 checkpoint_every: 500
 convergence_reward_variance_threshold: 0.05
 convergence_window: 100
-max_episodes_extended: 5000
+max_episodes_extended: 20000
 # SystemConfig override: disable CI-based weight scaling (flat 1.0 weights)
 min_rater_weight: 1.0
 max_rater_weight: 1.0

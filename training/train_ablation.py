@@ -23,6 +23,22 @@ torch.set_num_threads(1)
 from env.reputation_marl_env import ReputationMARLEnv
 from env.reputation_engine import SystemConfig
 from agents.mappo import MAPPOTrainer
+from evaluation.basins import collect_basin_report
+
+# YAML keys that override SystemConfig fields. Absent keys keep the SystemConfig
+# DEFAULT (Tier 1A: rater-weight clamp default is now Go-matching [0.1, 5.0];
+# legacy [0.5, 2.0] is selectable by setting min_rater_weight/max_rater_weight).
+_SYS_CFG_KEYS = ("decay_rate", "decay_period", "min_stake_required", "slash_percentage",
+                 "dispute_cost", "min_rater_weight", "max_rater_weight",
+                 "initial_alpha", "initial_beta")
+
+
+def build_system_config(cfg: dict) -> SystemConfig:
+    sc = SystemConfig()
+    for k in _SYS_CFG_KEYS:
+        if k in cfg and cfg[k] is not None:
+            setattr(sc, k, cfg[k])
+    return sc
 
 
 def run_episode(env: ReputationMARLEnv, trainer: MAPPOTrainer,
@@ -83,14 +99,10 @@ def train_config(cfg: dict, seed: int, output_dir: Path) -> dict:
     np.random.seed(seed)
     import torch; torch.manual_seed(seed)
 
-    # Build SystemConfig from YAML fields if present
-    sys_cfg = SystemConfig(
-        decay_rate=cfg.get("decay_rate", 0.98),
-        min_stake_required=cfg.get("min_stake_required", 10_000.0),
-        dispute_cost=cfg.get("dispute_cost", 100.0),
-        min_rater_weight=cfg.get("min_rater_weight", 0.5),
-        max_rater_weight=cfg.get("max_rater_weight", 2.0),
-    )
+    # Build SystemConfig from YAML overrides; absent keys keep SystemConfig defaults
+    # (Tier 1A: default rater-weight clamp is now [0.1, 5.0]; legacy [0.5, 2.0]
+    # reproducible by adding min_rater_weight/max_rater_weight to the YAML).
+    sys_cfg = build_system_config(cfg)
 
     env = ReputationMARLEnv(
         n_agents=cfg["n_agents"],
@@ -102,6 +114,7 @@ def train_config(cfg: dict, seed: int, output_dir: Path) -> dict:
         enabled_attacks=cfg.get("enabled_attacks", None),
         config=sys_cfg,
         seed=seed,
+        stake_obs_mode=cfg.get("stake_obs_mode", "absolute_log"),
     )
 
     trainer = MAPPOTrainer(obs_dim=14, act_dim=12)
@@ -124,7 +137,7 @@ def train_config(cfg: dict, seed: int, output_dir: Path) -> dict:
     converged_at = None
     start_time = time.time()
 
-    wall_budget = 4 * 3600  # 4 hour budget for ablations
+    wall_budget = 10 * 3600  # 10 hour budget for best convergence
 
     ep = 0
     hard_limit = max_ep_ext
@@ -175,9 +188,15 @@ def train_config(cfg: dict, seed: int, output_dir: Path) -> dict:
 
     total_time = time.time() - start_time
 
+    # Tier 1A: self-report the basin from a deterministic eval (WS3).
+    basin_report = collect_basin_report(
+        env, lambda ag, obs: trainer.select_action(ag, obs, deterministic=True)[0],
+        eval_episodes=eval_ep)
+
     result = {
         "config": cfg["name"],
         "seed": seed,
+        "stake_obs_mode": env.stake_obs_mode,
         "converged": converged,
         "converged_at": converged_at,
         "episodes_trained": ep,
@@ -189,6 +208,7 @@ def train_config(cfg: dict, seed: int, output_dir: Path) -> dict:
         "eval_mean_honest_pct": float(np.mean(eval_honest)),
         "eval_std_honest_pct":  float(np.std(eval_honest)),
         "final_env_metrics": env.get_metrics(),
+        **basin_report,
         "log": log,
     }
 

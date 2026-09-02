@@ -1,0 +1,16 @@
+name: smoke_no_dispute_absolute
+description: "Tier1A smoke — no_dispute (min_stake=10000, dispute_cost=1e6), stake_obs_mode=absolute_log"
+adversarial_ids: [0, 1, 2, 3, 4]
+adversarial_reward_bonus: 0.5
+min_stake_required: 10000.0
+dispute_cost: 1000000.0
+stake_obs_mode: absolute_log
+n_agents: 20
+max_steps: 100
+episodes: 150
+eval_episodes: 20
+seeds: 2
+checkpoint_every: 1000
+convergence_window: 100
+convergence_reward_variance_threshold: 0.05
+max_episodes_extended: 150

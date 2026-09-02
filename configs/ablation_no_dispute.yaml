@@ -12,6 +12,6 @@ max_sybils_per_agent: 0
 checkpoint_every: 500
 convergence_reward_variance_threshold: 0.05
 convergence_window: 100
-max_episodes_extended: 5000
+max_episodes_extended: 20000
 # SystemConfig override: make disputes impossible by setting cost to balance (10000 * 100)
 dispute_cost: 1000000.0

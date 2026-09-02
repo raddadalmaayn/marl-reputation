@@ -51,3 +51,11 @@ Thumbs.db
 /tmp/
 *.log
 *.tmp
+
+# ---------------------------------------------------------------
+# Tier 1B sweep results — results/tier1b/sweep/ alone is ~19 GB
+# (540 shards, 20,629 checkpoints). Raw results never enter git.
+# Already-tracked small artifacts under results/ are unaffected;
+# this rule only stops NEW results from being added.
+# ---------------------------------------------------------------
+results/

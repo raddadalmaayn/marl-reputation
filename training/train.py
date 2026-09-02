@@ -22,7 +22,25 @@ import torch
 torch.set_num_threads(1)
 
 from env.reputation_marl_env import ReputationMARLEnv
+from env.reputation_engine import SystemConfig
 from agents.mappo import MAPPOTrainer
+from evaluation.basins import collect_basin_report
+
+
+# Keys in a config YAML that override SystemConfig fields (Tier 1A: lets train.py
+# select the legacy rater-weight clamp [0.5,2.0] and any engine param for exact
+# v1 reproduction; absent keys keep the SystemConfig default, e.g. clamp [0.1,5.0]).
+_SYS_CFG_KEYS = ("decay_rate", "decay_period", "min_stake_required", "slash_percentage",
+                 "dispute_cost", "min_rater_weight", "max_rater_weight",
+                 "initial_alpha", "initial_beta")
+
+
+def build_system_config(cfg: dict) -> SystemConfig:
+    sc = SystemConfig()
+    for k in _SYS_CFG_KEYS:
+        if k in cfg and cfg[k] is not None:
+            setattr(sc, k, cfg[k])
+    return sc
 
 
 def run_episode(env: ReputationMARLEnv, trainer: MAPPOTrainer,
@@ -93,8 +111,12 @@ def train_config(cfg: dict, seed: int, output_dir: Path) -> dict:
         collusion_groups=cfg.get("collusion_groups", []),
         max_sybils_per_agent=cfg.get("max_sybils_per_agent", 0),
         enabled_attacks=cfg.get("enabled_attacks", None),
+        config=build_system_config(cfg),
         seed=seed,
         terminal_reward_coef=cfg.get("terminal_reward_coef", 0.0),
+        stake_obs_mode=cfg.get("stake_obs_mode", "absolute_log"),
+        participation_coef=cfg.get("participation_coef", 0.0),
+        reputation_engine=cfg.get("reputation_engine", "beta"),
     )
 
     trainer = MAPPOTrainer(obs_dim=14, act_dim=12)
@@ -177,9 +199,18 @@ def train_config(cfg: dict, seed: int, output_dir: Path) -> dict:
 
     total_time = time.time() - start_time
 
+    # Tier 1A: self-report the basin from a deterministic eval (WS3).
+    # Tier 1B: also compute Spearman rho (with_rho=True).
+    basin_report = collect_basin_report(
+        env, lambda ag, obs: trainer.select_action(ag, obs, deterministic=True)[0],
+        eval_episodes=eval_ep, with_rho=True)
+
     result = {
         "config": cfg["name"],
         "seed": seed,
+        "stake_obs_mode": env.stake_obs_mode,
+        "participation_coef": env.participation_coef,
+        "reputation_engine": env.reputation_engine_name,
         "converged": converged,
         "converged_at": converged_at,
         "episodes_trained": ep,
@@ -191,6 +222,7 @@ def train_config(cfg: dict, seed: int, output_dir: Path) -> dict:
         "eval_mean_honest_pct": float(np.mean(eval_honest)),
         "eval_std_honest_pct":  float(np.std(eval_honest)),
         "final_env_metrics": env.get_metrics(),
+        **basin_report,
         "log": log,
     }
 

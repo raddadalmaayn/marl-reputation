@@ -12,7 +12,7 @@ convergence_window: 100
 description: 'Sensitivity sweep: adversarial_reward_bonus=4.0'
 episodes: 5000
 eval_episodes: 20
-max_episodes_extended: 3000
+max_episodes_extended: 20000
 max_steps: 100
 max_sybils_per_agent: 0
 n_agents: 20
